@@ -3,7 +3,6 @@ import { PlayerTile } from './PlayerTile'
 import { BlankTile } from './BlankTile'
 
 interface TeamColumnProps {
-  team: 'A' | 'B'
   teamName: string
   teamColor: string
   players: Player[]
@@ -11,7 +10,7 @@ interface TeamColumnProps {
   tileHeight: number
 }
 
-export function TeamColumn({ team, teamName, teamColor, players, rowCount, tileHeight }: TeamColumnProps) {
+export function TeamColumn({ teamName, teamColor, players, rowCount, tileHeight }: TeamColumnProps) {
   const blankCount = rowCount - players.length
 
   return (

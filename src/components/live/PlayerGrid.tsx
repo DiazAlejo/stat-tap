@@ -25,7 +25,6 @@ export function PlayerGrid() {
   return (
     <div className="flex flex-1 overflow-hidden">
       <TeamColumn
-        team="A"
         teamName={meta.teamA.name}
         teamColor={teamAColor}
         players={playersA}
@@ -34,7 +33,6 @@ export function PlayerGrid() {
       />
       <div className="w-px bg-[var(--color-border)] shrink-0" />
       <TeamColumn
-        team="B"
         teamName={meta.teamB.name}
         teamColor={teamBColor}
         players={playersB}
