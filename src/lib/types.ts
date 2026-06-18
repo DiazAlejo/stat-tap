@@ -71,6 +71,6 @@ export interface GameListItem {
   teamBName: string
   teamAColor: string
   teamBColor: string
-  status: 'live' | 'ended'
+  status: GameStatus
   createdAt: number
 }

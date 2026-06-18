@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database, Json } from './database.types'
-import type { GameMeta, GameEvent, GameSnapshot, GameListItem } from './types'
+import type { GameMeta, GameEvent, GameSnapshot, GameListItem, GameStatus } from './types'
 import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from './game'
 
 let _client: ReturnType<typeof createClient<Database>> | null = null
@@ -77,21 +77,30 @@ export async function setSnapshot(gameId: string, snapshot: GameSnapshot): Promi
 }
 
 export async function listGames(): Promise<GameListItem[]> {
-  const { data } = await getClient()
+  const { data, error } = await getClient()
     .from('games')
     .select('id, meta, status, created_at')
     .order('created_at', { ascending: false })
 
-  return (data ?? []).map(row => {
-    const meta = row.meta as unknown as GameMeta
-    return {
-      id: row.id,
-      teamAName: meta.teamA.name,
-      teamBName: meta.teamB.name,
-      teamAColor: meta.teamAColor ?? DEFAULT_TEAM_A_COLOR,
-      teamBColor: meta.teamBColor ?? DEFAULT_TEAM_B_COLOR,
-      status: row.status as 'live' | 'ended',
-      createdAt: new Date(row.created_at).getTime(),
+  if (error) throw error
+
+  const items: GameListItem[] = []
+  for (const row of data ?? []) {
+    try {
+      const meta = row.meta as unknown as GameMeta
+      const status: GameStatus = row.status === 'ended' ? 'ended' : 'live'
+      items.push({
+        id: row.id,
+        teamAName: meta.teamA.name,
+        teamBName: meta.teamB.name,
+        teamAColor: meta.teamAColor ?? DEFAULT_TEAM_A_COLOR,
+        teamBColor: meta.teamBColor ?? DEFAULT_TEAM_B_COLOR,
+        status,
+        createdAt: new Date(row.created_at).getTime(),
+      })
+    } catch {
+      // Skip malformed rows rather than crashing the entire list
     }
-  })
+  }
+  return items
 }
