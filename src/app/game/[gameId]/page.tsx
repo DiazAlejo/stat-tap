@@ -56,12 +56,14 @@ export default async function GameReportPage({ params }: { params: Promise<{ gam
           team="A"
           players={playersA}
           playerStats={finalState.playerStats}
+          mode={meta.mode}
         />
         <BoxScoreTable
           teamName={meta.teamB.name}
           team="B"
           players={playersB}
           playerStats={finalState.playerStats}
+          mode={meta.mode}
         />
       </div>
     </main>
