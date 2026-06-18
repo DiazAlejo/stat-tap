@@ -6,11 +6,10 @@ interface BoxScoreTableProps {
   players: Player[]
   playerStats: Record<string, PlayerStats>
   mode: StatMode
+  teamColor: string
 }
 
-export function BoxScoreTable({ teamName, team, players, playerStats, mode }: BoxScoreTableProps) {
-  const accentColor = team === 'A' ? 'text-team-a' : 'text-team-b'
-  const accentBorder = team === 'A' ? 'border-team-a' : 'border-team-b'
+export function BoxScoreTable({ teamName, players, playerStats, mode, teamColor }: BoxScoreTableProps) {
   const isPointsOnly = mode === 'points-only'
 
   const sorted = [...players].sort((a, b) => {
@@ -20,9 +19,15 @@ export function BoxScoreTable({ teamName, team, players, playerStats, mode }: Bo
   })
 
   return (
-    <div className={`bg-surface rounded-xl overflow-hidden border-t-4 ${accentBorder}`}>
+    <div
+      className="bg-surface rounded-xl overflow-hidden border-t-4"
+      style={{ borderTopColor: teamColor }}
+    >
       <div className="px-4 py-3 border-b border-[var(--color-border)]">
-        <h2 className={`font-display font-bold text-lg uppercase tracking-wide ${accentColor}`}>
+        <h2
+          className="font-display font-bold text-lg uppercase tracking-wide"
+          style={{ color: teamColor }}
+        >
           {teamName}
         </h2>
       </div>

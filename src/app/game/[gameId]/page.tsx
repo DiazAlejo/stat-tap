@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getMeta, getEvents, getSnapshot } from '@/lib/db'
 import { gameReducer } from '@/lib/reducer'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import { FinalScoreHeader } from '@/components/report/FinalScoreHeader'
 import { BoxScoreTable } from '@/components/report/BoxScoreTable'
 import { LoggerActions } from '@/components/report/LoggerActions'
@@ -16,8 +17,8 @@ export default async function GameReportPage({
   const { gameId } = await params
   const { from } = await searchParams
   const isLogger = from === 'logger'
-  const meta = await getMeta(gameId)
 
+  const meta = await getMeta(gameId)
   if (!meta) redirect('/')
 
   let finalState: GameState
@@ -28,13 +29,11 @@ export default async function GameReportPage({
     if (snapshot) {
       finalState = snapshot.finalState
     } else {
-      // Snapshot missing — recompute from events
       const events = await getEvents(gameId)
       finalState = gameReducer(events)
     }
     isLive = false
   } else {
-    // Game still live — show current computed state
     const events = await getEvents(gameId)
     finalState = gameReducer(events)
     isLive = true
@@ -42,6 +41,8 @@ export default async function GameReportPage({
 
   const playersA = meta.players.filter(p => p.team === 'A')
   const playersB = meta.players.filter(p => p.team === 'B')
+  const teamAColor = meta.teamAColor ?? DEFAULT_TEAM_A_COLOR
+  const teamBColor = meta.teamBColor ?? DEFAULT_TEAM_B_COLOR
 
   return (
     <main className="min-h-dvh bg-bg p-6 flex flex-col gap-8 max-w-3xl mx-auto">
@@ -59,6 +60,8 @@ export default async function GameReportPage({
         scoreA={finalState.scoreA}
         scoreB={finalState.scoreB}
         isLive={isLive}
+        teamAColor={teamAColor}
+        teamBColor={teamBColor}
       />
 
       <div className="flex flex-col gap-6">
@@ -68,6 +71,7 @@ export default async function GameReportPage({
           players={playersA}
           playerStats={finalState.playerStats}
           mode={meta.mode}
+          teamColor={teamAColor}
         />
         <BoxScoreTable
           teamName={meta.teamB.name}
@@ -75,6 +79,7 @@ export default async function GameReportPage({
           players={playersB}
           playerStats={finalState.playerStats}
           mode={meta.mode}
+          teamColor={teamBColor}
         />
       </div>
     </main>
