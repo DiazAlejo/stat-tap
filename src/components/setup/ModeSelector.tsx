@@ -14,7 +14,7 @@ export function ModeSelector({ value, onChange }: ModeSelectorProps) {
           const selected = value === mode
           const label = mode === 'points-only' ? 'Points Only' : 'Make & Miss'
           const description = mode === 'points-only'
-            ? '+1 FT · +2 FG · +3 3PT'
+            ? '+1 FT · +2 2PT · +3 3PT'
             : 'Track makes and misses per shot type'
           return (
             <button

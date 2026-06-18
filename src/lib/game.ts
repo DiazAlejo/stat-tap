@@ -12,6 +12,15 @@ export function emptyStats(): PlayerStats {
   }
 }
 
+/** Total field goals (2PT + 3PT only; free throws excluded). */
+export function totalFgMakes(stats: PlayerStats): number {
+  return stats.fgMakes + stats.threeMakes
+}
+
+export function totalFgAttempts(stats: PlayerStats): number {
+  return stats.fgAttempts + stats.threeAttempts
+}
+
 export function initialGameState(): GameState {
   return { scoreA: 0, scoreB: 0, playerStats: {} }
 }

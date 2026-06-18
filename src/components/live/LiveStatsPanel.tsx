@@ -2,16 +2,17 @@
 
 import { X } from 'lucide-react'
 import { useGame } from '@/context/GameContext'
-import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR, emptyStats } from '@/lib/game'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR, emptyStats, totalFgAttempts, totalFgMakes } from '@/lib/game'
 import type { Player, PlayerStats } from '@/lib/types'
 
 function PointsOnlyRow({ player, stats }: { player: Player; stats: PlayerStats }) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-[var(--color-border)] gap-4">
       <span className="font-display font-semibold text-sm text-fg shrink-0">{player.displayLabel}</span>
-      <div className="flex items-center gap-3 text-xs font-body tabular-nums">
+      <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-0.5 text-xs font-body tabular-nums">
         <span className="text-fg font-bold">{stats.points}pts</span>
-        <span className="text-muted">FG {stats.fgMakes}</span>
+        <span className="text-muted">FG {totalFgMakes(stats)}</span>
+        <span className="text-muted">2PT {stats.fgMakes}</span>
         <span className="text-muted">3PT {stats.threeMakes}</span>
         <span className="text-muted">FT {stats.ftMakes}</span>
       </div>
@@ -23,9 +24,10 @@ function MakeMissRow({ player, stats }: { player: Player; stats: PlayerStats }) 
   return (
     <div className="flex items-center justify-between py-2 border-b border-[var(--color-border)] gap-4">
       <span className="font-display font-semibold text-sm text-fg shrink-0">{player.displayLabel}</span>
-      <div className="flex items-center gap-3 text-xs font-body tabular-nums">
+      <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-0.5 text-xs font-body tabular-nums">
         <span className="text-fg font-bold">{stats.points}pts</span>
-        <span className="text-muted">FG {stats.fgMakes}/{stats.fgAttempts}</span>
+        <span className="text-muted">FG {totalFgMakes(stats)}/{totalFgAttempts(stats)}</span>
+        <span className="text-muted">2PT {stats.fgMakes}/{stats.fgAttempts}</span>
         <span className="text-muted">3PT {stats.threeMakes}/{stats.threeAttempts}</span>
         <span className="text-muted">FT {stats.ftMakes}/{stats.ftAttempts}</span>
       </div>

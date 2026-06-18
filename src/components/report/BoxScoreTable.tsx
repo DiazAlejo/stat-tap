@@ -1,3 +1,4 @@
+import { totalFgAttempts, totalFgMakes } from '@/lib/game'
 import type { Player, PlayerStats, StatMode } from '@/lib/types'
 
 interface BoxScoreTableProps {
@@ -36,6 +37,7 @@ export function BoxScoreTable({ teamName, players, playerStats, mode, teamColor 
             <th className="text-left px-4 py-2 font-body text-xs text-muted uppercase tracking-wide">Player</th>
             <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">PTS</th>
             <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? 'FGM' : 'FG'}</th>
+            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? '2PM' : '2P'}</th>
             <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? '3PM' : '3P'}</th>
             <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? 'FTM' : 'FT'}</th>
           </tr>
@@ -51,6 +53,9 @@ export function BoxScoreTable({ teamName, players, playerStats, mode, teamColor 
                 <td className="px-4 py-3 font-display font-semibold text-base text-fg">{player.displayLabel}</td>
                 <td className="px-3 py-3 text-right font-display font-bold text-base text-fg tabular-nums">{stats.points}</td>
                 <td className="px-3 py-3 text-right font-body text-sm text-muted tabular-nums">
+                  {isPointsOnly ? totalFgMakes(stats) : `${totalFgMakes(stats)}/${totalFgAttempts(stats)}`}
+                </td>
+                <td className="px-3 py-3 text-right font-body text-sm text-muted tabular-nums">
                   {isPointsOnly ? stats.fgMakes : `${stats.fgMakes}/${stats.fgAttempts}`}
                 </td>
                 <td className="px-3 py-3 text-right font-body text-sm text-muted tabular-nums">
@@ -64,7 +69,7 @@ export function BoxScoreTable({ teamName, players, playerStats, mode, teamColor 
           })}
           {sorted.length === 0 && (
             <tr>
-              <td colSpan={5} className="px-4 py-6 text-center text-muted font-body text-sm">No players</td>
+              <td colSpan={6} className="px-4 py-6 text-center text-muted font-body text-sm">No players</td>
             </tr>
           )}
         </tbody>

@@ -6,15 +6,15 @@ import type { ActionType, GameEvent } from '@/lib/types'
 
 const POINTS_ONLY_ACTIONS: { label: string; actionType: ActionType; points: number }[] = [
   { label: '+1 FT', actionType: 'FT_MAKE', points: 1 },
-  { label: '+2 FG', actionType: 'FG_MAKE', points: 2 },
+  { label: '+2 2PT', actionType: 'FG_MAKE', points: 2 },
   { label: '+3 3PT', actionType: '3PT_MAKE', points: 3 },
 ]
 
 const MAKE_MISS_ACTIONS: { label: string; actionType: ActionType; points: number; isMake: boolean }[] = [
   { label: 'FT Make', actionType: 'FT_MAKE', points: 1, isMake: true },
   { label: 'FT Miss', actionType: 'FT_MISS', points: 0, isMake: false },
-  { label: 'FG Make', actionType: 'FG_MAKE', points: 2, isMake: true },
-  { label: 'FG Miss', actionType: 'FG_MISS', points: 0, isMake: false },
+  { label: '2PT Make', actionType: 'FG_MAKE', points: 2, isMake: true },
+  { label: '2PT Miss', actionType: 'FG_MISS', points: 0, isMake: false },
   { label: '3PT Make', actionType: '3PT_MAKE', points: 3, isMake: true },
   { label: '3PT Miss', actionType: '3PT_MISS', points: 0, isMake: false },
 ]
