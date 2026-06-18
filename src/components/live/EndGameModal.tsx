@@ -30,13 +30,13 @@ export function EndGameModal({ onClose, onConfirm, isLoading }: EndGameModalProp
     <div
       className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget && !isLoading) onClose() }}
-      role="dialog"
-      aria-modal="true"
-      aria-label="End game confirmation"
     >
       <div
         ref={dialogRef}
         tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="End game confirmation"
         className="bg-surface rounded-2xl p-8 max-w-sm w-full mx-4 flex flex-col gap-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200 outline-none"
       >
         <div className="flex items-start justify-between gap-4">
