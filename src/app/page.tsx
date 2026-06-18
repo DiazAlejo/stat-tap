@@ -6,6 +6,8 @@ import { Zap } from 'lucide-react'
 import { TeamNameInput } from '@/components/setup/TeamNameInput'
 import { PlayerEntryList } from '@/components/setup/PlayerEntryList'
 import { ModeSelector } from '@/components/setup/ModeSelector'
+import { TeamColorPicker } from '@/components/setup/TeamColorPicker'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import type { StatMode } from '@/lib/types'
 
 interface PlayerEntry {
@@ -21,6 +23,8 @@ export default function GameSetupScreen() {
   const [playersA, setPlayersA] = useState<PlayerEntry[]>([])
   const [playersB, setPlayersB] = useState<PlayerEntry[]>([])
   const [mode, setMode] = useState<StatMode>('points-only')
+  const [teamAColor, setTeamAColor] = useState(DEFAULT_TEAM_A_COLOR)
+  const [teamBColor, setTeamBColor] = useState(DEFAULT_TEAM_B_COLOR)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,6 +50,8 @@ export default function GameSetupScreen() {
           teamB: { name: teamBName || 'Team B' },
           players,
           mode,
+          teamAColor,
+          teamBColor,
         }),
       })
       const data = await res.json()
@@ -65,8 +71,14 @@ export default function GameSetupScreen() {
       </header>
 
       <div className="grid grid-cols-2 gap-6">
-        <TeamNameInput team="A" value={teamAName} onChange={setTeamAName} />
-        <TeamNameInput team="B" value={teamBName} onChange={setTeamBName} />
+        <div className="flex flex-col gap-3">
+          <TeamNameInput team="A" value={teamAName} onChange={setTeamAName} />
+          <TeamColorPicker team="A" value={teamAColor} onChange={setTeamAColor} />
+        </div>
+        <div className="flex flex-col gap-3">
+          <TeamNameInput team="B" value={teamBName} onChange={setTeamBName} />
+          <TeamColorPicker team="B" value={teamBColor} onChange={setTeamBColor} />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
