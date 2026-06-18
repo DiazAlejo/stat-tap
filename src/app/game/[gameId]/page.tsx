@@ -67,7 +67,6 @@ export default async function GameReportPage({
       <div className="flex flex-col gap-6">
         <BoxScoreTable
           teamName={meta.teamA.name}
-          team="A"
           players={playersA}
           playerStats={finalState.playerStats}
           mode={meta.mode}
@@ -75,7 +74,6 @@ export default async function GameReportPage({
         />
         <BoxScoreTable
           teamName={meta.teamB.name}
-          team="B"
           players={playersB}
           playerStats={finalState.playerStats}
           mode={meta.mode}

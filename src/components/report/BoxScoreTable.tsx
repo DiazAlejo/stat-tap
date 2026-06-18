@@ -2,7 +2,6 @@ import type { Player, PlayerStats, StatMode } from '@/lib/types'
 
 interface BoxScoreTableProps {
   teamName: string
-  team: 'A' | 'B'
   players: Player[]
   playerStats: Record<string, PlayerStats>
   mode: StatMode
