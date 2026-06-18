@@ -41,3 +41,17 @@ export function buildPlayer(
     slot,
   }
 }
+
+export const DEFAULT_TEAM_A_COLOR = '#38BDF8'
+export const DEFAULT_TEAM_B_COLOR = '#A78BFA'
+
+export const TEAM_COLORS = [
+  '#38BDF8', // sky blue
+  '#3B82F6', // blue
+  '#A78BFA', // purple
+  '#EC4899', // pink
+  '#F97316', // orange
+  '#22C55E', // green
+  '#EAB308', // yellow
+  '#EF4444', // red
+] as const

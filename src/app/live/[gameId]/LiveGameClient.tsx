@@ -10,6 +10,7 @@ import { ActionBar } from '@/components/live/ActionBar'
 import { SyncIndicator } from '@/components/ui/SyncIndicator'
 import { EndGameModal } from '@/components/live/EndGameModal'
 import { LiveStatsPanel } from '@/components/live/LiveStatsPanel'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import type { GameMeta, GameEvent } from '@/lib/types'
 
 function LiveGameInner() {
@@ -29,7 +30,7 @@ function LiveGameInner() {
     try {
       const res = await fetch(`/api/game/${meta.id}/end`, { method: 'POST' })
       if (res.ok) {
-        router.push(`/game/${meta.id}`)
+        router.push(`/game/${meta.id}?from=logger`)
       } else {
         setEndGameLoading(false)
         setShowEndGameModal(false)
@@ -47,6 +48,8 @@ function LiveGameInner() {
         teamBName={meta.teamB.name}
         scoreA={derived.scoreA}
         scoreB={derived.scoreB}
+        teamAColor={meta.teamAColor ?? DEFAULT_TEAM_A_COLOR}
+        teamBColor={meta.teamBColor ?? DEFAULT_TEAM_B_COLOR}
         onUndo={handleUndo}
         onEndGameClick={() => setShowEndGameModal(true)}
       />

@@ -1,14 +1,24 @@
 import { redirect } from 'next/navigation'
 import { getMeta, getEvents, getSnapshot } from '@/lib/db'
 import { gameReducer } from '@/lib/reducer'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import { FinalScoreHeader } from '@/components/report/FinalScoreHeader'
 import { BoxScoreTable } from '@/components/report/BoxScoreTable'
+import { LoggerActions } from '@/components/report/LoggerActions'
 import type { GameState } from '@/lib/types'
 
-export default async function GameReportPage({ params }: { params: Promise<{ gameId: string }> }) {
+export default async function GameReportPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ gameId: string }>
+  searchParams: Promise<{ from?: string }>
+}) {
   const { gameId } = await params
-  const meta = await getMeta(gameId)
+  const { from } = await searchParams
+  const isLogger = from === 'logger'
 
+  const meta = await getMeta(gameId)
   if (!meta) redirect('/')
 
   let finalState: GameState
@@ -19,13 +29,11 @@ export default async function GameReportPage({ params }: { params: Promise<{ gam
     if (snapshot) {
       finalState = snapshot.finalState
     } else {
-      // Snapshot missing — recompute from events
       const events = await getEvents(gameId)
       finalState = gameReducer(events)
     }
     isLive = false
   } else {
-    // Game still live — show current computed state
     const events = await getEvents(gameId)
     finalState = gameReducer(events)
     isLive = true
@@ -33,9 +41,13 @@ export default async function GameReportPage({ params }: { params: Promise<{ gam
 
   const playersA = meta.players.filter(p => p.team === 'A')
   const playersB = meta.players.filter(p => p.team === 'B')
+  const teamAColor = meta.teamAColor ?? DEFAULT_TEAM_A_COLOR
+  const teamBColor = meta.teamBColor ?? DEFAULT_TEAM_B_COLOR
 
   return (
     <main className="min-h-dvh bg-bg p-6 flex flex-col gap-8 max-w-3xl mx-auto">
+      {isLogger && <LoggerActions gameId={gameId} />}
+
       {isLive && (
         <div className="bg-primary/10 border border-primary/30 rounded-xl px-4 py-3">
           <p className="text-primary font-display font-bold text-sm uppercase tracking-wide">Game in Progress</p>
@@ -48,20 +60,24 @@ export default async function GameReportPage({ params }: { params: Promise<{ gam
         scoreA={finalState.scoreA}
         scoreB={finalState.scoreB}
         isLive={isLive}
+        teamAColor={teamAColor}
+        teamBColor={teamBColor}
       />
 
       <div className="flex flex-col gap-6">
         <BoxScoreTable
           teamName={meta.teamA.name}
-          team="A"
           players={playersA}
           playerStats={finalState.playerStats}
+          mode={meta.mode}
+          teamColor={teamAColor}
         />
         <BoxScoreTable
           teamName={meta.teamB.name}
-          team="B"
           players={playersB}
           playerStats={finalState.playerStats}
+          mode={meta.mode}
+          teamColor={teamBColor}
         />
       </div>
     </main>

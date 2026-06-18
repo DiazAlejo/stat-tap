@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { useGame } from '@/context/GameContext'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import type { Player } from '@/lib/types'
 import type { GameState } from '@/lib/types'
 
@@ -38,9 +39,9 @@ function ShootingRow({ player, stats }: {
   )
 }
 
-function TeamStatsSection({ teamLabel, teamAccent, players, tab, derived }: {
+function TeamStatsSection({ teamLabel, teamColor, players, tab, derived }: {
   teamLabel: string
-  teamAccent: string
+  teamColor: string
   players: Player[]
   tab: StatsTab
   derived: GameState
@@ -53,7 +54,10 @@ function TeamStatsSection({ teamLabel, teamAccent, players, tab, derived }: {
 
   return (
     <div className="flex flex-col gap-1">
-      <h3 className={`font-display font-bold text-xs uppercase tracking-widest mb-1 ${teamAccent}`}>
+      <h3
+        className="font-display font-bold text-xs uppercase tracking-widest mb-1"
+        style={{ color: teamColor }}
+      >
         {teamLabel}
       </h3>
       {sorted.map(player => {
@@ -77,16 +81,16 @@ export function LiveStatsPanel({ onClose }: LiveStatsPanelProps) {
 
   const playersA = meta.players.filter(p => p.team === 'A')
   const playersB = meta.players.filter(p => p.team === 'B')
+  const teamAColor = meta.teamAColor ?? DEFAULT_TEAM_A_COLOR
+  const teamBColor = meta.teamBColor ?? DEFAULT_TEAM_B_COLOR
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/40 z-40"
         onClick={onClose}
         aria-hidden="true"
       />
-      {/* Panel */}
       <div
         className="fixed top-0 right-0 h-full w-full max-w-sm bg-surface z-50 flex flex-col shadow-2xl"
         style={{ animation: 'slideInRight 250ms ease-out' }}
@@ -104,7 +108,6 @@ export function LiveStatsPanel({ onClose }: LiveStatsPanelProps) {
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-0 px-6 py-3 border-b border-[var(--color-border)]">
           {(['points', 'shooting'] as StatsTab[]).map(t => (
             <button
@@ -122,18 +125,17 @@ export function LiveStatsPanel({ onClose }: LiveStatsPanelProps) {
           ))}
         </div>
 
-        {/* Stats content */}
         <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6">
           <TeamStatsSection
             teamLabel={meta.teamA.name}
-            teamAccent="text-team-a"
+            teamColor={teamAColor}
             players={playersA}
             tab={tab}
             derived={derived}
           />
           <TeamStatsSection
             teamLabel={meta.teamB.name}
-            teamAccent="text-team-b"
+            teamColor={teamBColor}
             players={playersB}
             tab={tab}
             derived={derived}

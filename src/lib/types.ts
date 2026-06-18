@@ -29,6 +29,8 @@ export interface GameMeta {
   mode: StatMode
   status: GameStatus
   createdAt: number
+  teamAColor?: string
+  teamBColor?: string
 }
 
 export interface GameEvent {
@@ -61,4 +63,14 @@ export interface GameSnapshot {
   events: GameEvent[]
   finalState: GameState
   endedAt: number
+}
+
+export interface GameListItem {
+  id: string
+  teamAName: string
+  teamBName: string
+  teamAColor: string
+  teamBColor: string
+  status: GameStatus
+  createdAt: number
 }
