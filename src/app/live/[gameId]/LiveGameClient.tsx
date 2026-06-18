@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { GameProvider, useGame } from '@/context/GameContext'
 import { ScoreHeader } from '@/components/live/ScoreHeader'
+import { PlayerGrid } from '@/components/live/PlayerGrid'
 import type { GameMeta, GameEvent } from '@/lib/types'
 
 function LiveGameInner() {
@@ -24,9 +25,7 @@ function LiveGameInner() {
         onUndo={handleUndo}
         onEndGameClick={() => setShowEndGameModal(true)}
       />
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-muted font-body">Player grid coming in Task 7</p>
-      </div>
+      <PlayerGrid />
       {showEndGameModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-surface rounded-2xl p-8 max-w-sm w-full mx-4 flex flex-col gap-6">
