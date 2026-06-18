@@ -112,8 +112,19 @@ export async function listGames(): Promise<GameListItem[]> {
 
 export async function deleteGame(gameId: string): Promise<void> {
   // Delete events first (foreign key: events.game_id → games.id)
-  const { error: eventsErr } = await getClient().from('events').delete().eq('game_id', gameId)
+  const { error: eventsErr } = await getClient()
+    .from('events')
+    .delete()
+    .eq('game_id', gameId)
   if (eventsErr) throw eventsErr
-  const { error: gameErr } = await getClient().from('games').delete().eq('id', gameId)
+
+  const { data, error: gameErr } = await getClient()
+    .from('games')
+    .delete()
+    .eq('id', gameId)
+    .select('id')
   if (gameErr) throw gameErr
+  if (!data || data.length === 0) {
+    throw new Error(`Game ${gameId} was not deleted — RLS may be blocking the operation`)
+  }
 }

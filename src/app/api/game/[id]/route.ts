@@ -24,8 +24,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const meta = await getMeta(id)
+
+  let meta
+  try {
+    meta = await getMeta(id)
+  } catch (err) {
+    console.error('getMeta failed in DELETE', err)
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+  }
+
   if (!meta) return NextResponse.json({ error: 'Game not found' }, { status: 404 })
+
   try {
     await deleteGame(id)
     return new NextResponse(null, { status: 204 })
