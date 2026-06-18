@@ -16,7 +16,7 @@ export function LoggerActions({ gameId }: LoggerActionsProps) {
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    })
+    }).catch(() => {})
   }
 
   return (
@@ -30,6 +30,7 @@ export function LoggerActions({ gameId }: LoggerActionsProps) {
       </Link>
       <button
         onClick={handleCopy}
+        aria-label={copied ? 'Link copied' : 'Copy share link'}
         className="flex items-center gap-2 px-4 py-3 bg-primary text-white rounded-xl font-display font-bold text-sm uppercase tracking-wide cursor-pointer active:opacity-85 transition-all duration-150 min-h-[48px]"
       >
         {copied ? <Check size={16} /> : <Copy size={16} />}
