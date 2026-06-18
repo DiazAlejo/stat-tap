@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --font-display: 'Barlow Condensed', sans-serif;
-  --font-body: 'Barlow', sans-serif;
+  --font-display: var(--font-barlow-condensed), sans-serif;
+  --font-body: var(--font-barlow), sans-serif;
 
   --color-bg: #0F172A;
   --color-surface: #1E293B;
   --color-surface-elevated: #293548;
   --color-primary: #F97316;
+  --color-on-primary: #FFFFFF;
   --color-team-a: #38BDF8;
   --color-team-b: #A78BFA;
   --color-make: #22C55E;
@@ -17,6 +17,7 @@
   --color-fg: #F8FAFC;
   --color-muted: #94A3B8;
   --color-destructive: #EF4444;
+  --color-border: rgba(255, 255, 255, 0.08);
 }
 
 :root {
@@ -39,9 +40,6 @@
 * { box-sizing: border-box; }
 
 body {
-  background-color: #0F172A;
-  color: #F8FAFC;
-  font-family: 'Barlow', sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 

@@ -5,14 +5,15 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Barlow Condensed', 'sans-serif'],
-        body:    ['Barlow', 'sans-serif'],
+        display: ['var(--font-barlow-condensed)', 'sans-serif'],
+        body:    ['var(--font-barlow)', 'sans-serif'],
       },
       colors: {
         bg:               '#0F172A',
         surface:          '#1E293B',
         'surface-elevated': '#293548',
         primary:          '#F97316',
+        'on-primary':     '#FFFFFF',
         'team-a':         '#38BDF8',
         'team-b':         '#A78BFA',
         make:             '#22C55E',
