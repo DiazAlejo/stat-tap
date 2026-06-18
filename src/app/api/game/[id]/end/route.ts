@@ -28,8 +28,13 @@ export async function POST(
     endedAt: Date.now(),
   }
 
-  await setMeta(id, endedMeta)
-  await setSnapshot(id, snapshot)
+  try {
+    await setMeta(id, endedMeta)
+    await setSnapshot(id, snapshot)
+  } catch (err) {
+    console.error('end game failed', err)
+    return NextResponse.json({ error: 'Failed to end game' }, { status: 500 })
+  }
 
   return NextResponse.json({ snapshot })
 }
