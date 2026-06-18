@@ -29,7 +29,7 @@ function LiveGameInner() {
     try {
       const res = await fetch(`/api/game/${meta.id}/end`, { method: 'POST' })
       if (res.ok) {
-        router.push(`/game/${meta.id}`)
+        router.push(`/game/${meta.id}?from=logger`)
       } else {
         setEndGameLoading(false)
         setShowEndGameModal(false)

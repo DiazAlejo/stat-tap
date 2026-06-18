@@ -3,10 +3,19 @@ import { getMeta, getEvents, getSnapshot } from '@/lib/db'
 import { gameReducer } from '@/lib/reducer'
 import { FinalScoreHeader } from '@/components/report/FinalScoreHeader'
 import { BoxScoreTable } from '@/components/report/BoxScoreTable'
+import { LoggerActions } from '@/components/report/LoggerActions'
 import type { GameState } from '@/lib/types'
 
-export default async function GameReportPage({ params }: { params: Promise<{ gameId: string }> }) {
+export default async function GameReportPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ gameId: string }>
+  searchParams: Promise<{ from?: string }>
+}) {
   const { gameId } = await params
+  const { from } = await searchParams
+  const isLogger = from === 'logger'
   const meta = await getMeta(gameId)
 
   if (!meta) redirect('/')
@@ -36,6 +45,8 @@ export default async function GameReportPage({ params }: { params: Promise<{ gam
 
   return (
     <main className="min-h-dvh bg-bg p-6 flex flex-col gap-8 max-w-3xl mx-auto">
+      {isLogger && <LoggerActions gameId={gameId} />}
+
       {isLive && (
         <div className="bg-primary/10 border border-primary/30 rounded-xl px-4 py-3">
           <p className="text-primary font-display font-bold text-sm uppercase tracking-wide">Game in Progress</p>
