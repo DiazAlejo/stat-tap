@@ -97,6 +97,8 @@ export async function listGames(): Promise<GameListItem[]> {
         teamBColor: meta.teamBColor ?? DEFAULT_TEAM_B_COLOR,
         status,
         createdAt: new Date(row.created_at).getTime(),
+        scoreA: meta.scoreA,
+        scoreB: meta.scoreB,
       })
     } catch {
       // Skip malformed rows rather than crashing the entire list
