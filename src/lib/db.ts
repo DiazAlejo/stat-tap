@@ -97,10 +97,20 @@ export async function listGames(): Promise<GameListItem[]> {
         teamBColor: meta.teamBColor ?? DEFAULT_TEAM_B_COLOR,
         status,
         createdAt: new Date(row.created_at).getTime(),
+        scoreA: meta.scoreA,
+        scoreB: meta.scoreB,
       })
     } catch {
       // Skip malformed rows rather than crashing the entire list
     }
   }
   return items
+}
+
+export async function deleteGame(gameId: string): Promise<void> {
+  // Delete events first (foreign key: events.game_id → games.id)
+  const { error: eventsErr } = await getClient().from('events').delete().eq('game_id', gameId)
+  if (eventsErr) throw eventsErr
+  const { error: gameErr } = await getClient().from('games').delete().eq('id', gameId)
+  if (gameErr) throw gameErr
 }

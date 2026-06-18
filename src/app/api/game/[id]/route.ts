@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMeta, getEvents, getSnapshot } from '@/lib/db'
+import { getMeta, getEvents, getSnapshot, deleteGame } from '@/lib/db'
 
 export async function GET(
   _req: NextRequest,
@@ -17,4 +17,20 @@ export async function GET(
   }
 
   return NextResponse.json({ meta, events })
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const meta = await getMeta(id)
+  if (!meta) return NextResponse.json({ error: 'Game not found' }, { status: 404 })
+  try {
+    await deleteGame(id)
+    return new NextResponse(null, { status: 204 })
+  } catch (err) {
+    console.error('deleteGame failed', err)
+    return NextResponse.json({ error: 'Failed to delete game' }, { status: 500 })
+  }
 }

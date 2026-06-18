@@ -15,7 +15,12 @@ export async function POST(
   const events = await getEvents(id)
   const finalState = gameReducer(events)
 
-  const endedMeta = { ...meta, status: 'ended' as const }
+  const endedMeta = {
+    ...meta,
+    status: 'ended' as const,
+    scoreA: finalState.scoreA,
+    scoreB: finalState.scoreB,
+  }
   const snapshot: GameSnapshot = {
     meta: endedMeta,
     events,

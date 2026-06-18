@@ -31,6 +31,8 @@ export interface GameMeta {
   createdAt: number
   teamAColor?: string
   teamBColor?: string
+  scoreA?: number
+  scoreB?: number
 }
 
 export interface GameEvent {
@@ -73,4 +75,6 @@ export interface GameListItem {
   teamBColor: string
   status: GameStatus
   createdAt: number
+  scoreA?: number
+  scoreB?: number
 }
