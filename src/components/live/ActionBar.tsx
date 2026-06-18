@@ -22,7 +22,7 @@ const MAKE_MISS_ACTIONS: { label: string; actionType: ActionType; points: number
 export function ActionBar() {
   const { meta, selectedPlayerId, dispatch } = useGame()
 
-  const isVisible = selectedPlayerId !== null
+  const hasPlayer = selectedPlayerId !== null
   const selectedPlayer = meta.players.find(p => p.id === selectedPlayerId)
 
   function handleAction(actionType: ActionType, points: number) {
@@ -61,15 +61,18 @@ export function ActionBar() {
       })
   }
 
+  if (!hasPlayer) {
+    return (
+      <div className="shrink-0 bg-surface border-t border-[var(--color-border)] flex items-center justify-center min-h-[72px]">
+        <span className="font-display font-semibold text-sm text-muted uppercase tracking-wide">
+          Select a player
+        </span>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className={`
-        shrink-0 bg-surface border-t border-[var(--color-border)]
-        transition-transform duration-200 ease-out
-        ${isVisible ? 'translate-y-0' : 'translate-y-full'}
-      `}
-      aria-hidden={!isVisible}
-    >
+    <div className="shrink-0 bg-surface border-t border-[var(--color-border)]">
       <div className="flex gap-px">
         {meta.mode === 'points-only'
           ? POINTS_ONLY_ACTIONS.map(action => (
@@ -77,8 +80,7 @@ export function ActionBar() {
                 key={action.actionType}
                 onClick={() => handleAction(action.actionType, action.points)}
                 aria-label={`${action.label} for ${selectedPlayer?.displayLabel ?? 'selected player'}`}
-                disabled={!isVisible}
-                className="flex-1 min-h-[72px] bg-primary text-white font-display font-bold text-xl cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 disabled:pointer-events-none"
+                className="flex-1 min-h-[72px] bg-primary text-white font-display font-bold text-xl cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150"
               >
                 {action.label}
               </button>
@@ -88,10 +90,9 @@ export function ActionBar() {
                 key={action.actionType}
                 onClick={() => handleAction(action.actionType, action.points)}
                 aria-label={`${action.label} for ${selectedPlayer?.displayLabel ?? 'selected player'}`}
-                disabled={!isVisible}
-                className={`flex-1 min-h-[72px] font-display font-bold text-lg text-white cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 disabled:pointer-events-none flex flex-col items-center justify-center gap-1
-                  ${action.isMake ? 'bg-make' : 'bg-miss'}
-                `}
+                className={`flex-1 min-h-[72px] font-display font-bold text-lg text-white cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 flex flex-col items-center justify-center gap-1 ${
+                  action.isMake ? 'bg-make' : 'bg-miss'
+                }`}
               >
                 {action.isMake ? <Check size={16} /> : <X size={16} />}
                 {action.label}
