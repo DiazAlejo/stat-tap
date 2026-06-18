@@ -11,11 +11,18 @@ export function PlayerGrid() {
 
   const playersA = meta.players.filter(p => p.team === 'A')
   const playersB = meta.players.filter(p => p.team === 'B')
-  const rowCount = Math.max(playersA.length, playersB.length, 1)
 
-  const tileHeight = Math.max(MIN_TILE_HEIGHT,
+  // Each team is split into 2 sub-columns, so effective row count is half the player count
+  const rowCount = Math.max(
+    Math.ceil(playersA.length / 2),
+    Math.ceil(playersB.length / 2),
+    1
+  )
+
+  const tileHeight = Math.max(
+    MIN_TILE_HEIGHT,
     typeof window !== 'undefined'
-      ? Math.floor((window.innerHeight - 180) / rowCount)
+      ? Math.floor((window.innerHeight - 200) / rowCount)
       : MIN_TILE_HEIGHT
   )
 

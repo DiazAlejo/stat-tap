@@ -42,7 +42,7 @@ function LiveGameInner() {
   }
 
   return (
-    <div className="min-h-dvh bg-bg flex flex-col">
+    <div className="h-dvh bg-bg flex flex-col overflow-hidden">
       <ScoreHeader
         teamAName={meta.teamA.name}
         teamBName={meta.teamB.name}
