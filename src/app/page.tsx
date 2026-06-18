@@ -81,6 +81,12 @@ export default function GameSetupScreen() {
         </div>
       </div>
 
+      {teamAColor === teamBColor && (
+        <p className="text-sm font-body text-muted bg-surface rounded-lg px-4 py-2 border border-[var(--color-border)]">
+          Both teams share the same color — the live scoreboard columns may be hard to tell apart.
+        </p>
+      )}
+
       <div className="grid grid-cols-2 gap-6">
         <PlayerEntryList team="A" entries={playersA} onChange={setPlayersA} />
         <PlayerEntryList team="B" entries={playersB} onChange={setPlayersB} />

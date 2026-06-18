@@ -1,3 +1,4 @@
+import React from 'react'
 import { TEAM_COLORS } from '@/lib/game'
 
 interface TeamColorPickerProps {
@@ -18,12 +19,15 @@ export function TeamColorPicker({ team, value, onChange }: TeamColorPickerProps)
             onClick={() => onChange(color)}
             aria-label={`Select color ${color} for Team ${team}`}
             aria-pressed={value === color}
-            style={{ backgroundColor: color }}
-            className={`w-8 h-8 rounded-full cursor-pointer transition-all duration-150 ${
+            className={`w-11 h-11 rounded-full cursor-pointer transition-all duration-150 ${
               value === color
-                ? 'ring-2 ring-offset-2 ring-offset-bg ring-white scale-110'
+                ? 'ring-2 ring-offset-2 ring-white scale-110'
                 : 'hover:scale-105 active:scale-95'
             }`}
+            style={{
+              backgroundColor: color,
+              ...(value === color ? { '--tw-ring-offset-color': '#0F172A' } as React.CSSProperties : {}),
+            }}
           />
         ))}
       </div>
