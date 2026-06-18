@@ -31,7 +31,7 @@ export function GameCard({ game }: GameCardProps) {
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && handleCardClick()}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleCardClick()}
       className="bg-surface border border-[var(--color-border)] rounded-xl px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-elevated transition-colors min-h-[72px] active:scale-[0.99] active:opacity-90"
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">

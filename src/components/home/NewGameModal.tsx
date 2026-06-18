@@ -20,12 +20,14 @@ export function NewGameModal({ onClose }: NewGameModalProps) {
         role="dialog"
         aria-label="New Game Setup"
         aria-modal="true"
+        onKeyDown={e => e.key === 'Escape' && onClose()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)] sticky top-0 bg-bg z-10">
           <h2 className="font-display font-bold text-2xl text-fg">New Game</h2>
           <button
             onClick={onClose}
             aria-label="Close"
+            autoFocus
             className="text-muted hover:text-fg transition-colors cursor-pointer"
           >
             <X size={24} />
