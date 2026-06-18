@@ -7,11 +7,17 @@ interface ScoreHeaderProps {
   teamBName: string
   scoreA: number
   scoreB: number
+  teamAColor: string
+  teamBColor: string
   onUndo: () => void
   onEndGameClick: () => void
 }
 
-export function ScoreHeader({ teamAName, teamBName, scoreA, scoreB, onUndo, onEndGameClick }: ScoreHeaderProps) {
+export function ScoreHeader({
+  teamAName, teamBName, scoreA, scoreB,
+  teamAColor, teamBColor,
+  onUndo, onEndGameClick,
+}: ScoreHeaderProps) {
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-surface border-b border-[var(--color-border)] shrink-0">
       <div className="flex items-center gap-4">
@@ -27,12 +33,22 @@ export function ScoreHeader({ teamAName, teamBName, scoreA, scoreB, onUndo, onEn
 
       <div className="flex items-center gap-6" aria-live="polite" aria-label={`Score: ${teamAName} ${scoreA}, ${teamBName} ${scoreB}`}>
         <div className="flex flex-col items-end">
-          <span className="font-display font-bold text-sm uppercase tracking-widest text-team-a">{teamAName}</span>
+          <span
+            className="font-display font-bold text-sm uppercase tracking-widest"
+            style={{ color: teamAColor }}
+          >
+            {teamAName}
+          </span>
           <span className="font-display font-bold text-[72px] leading-none text-score tabular-nums">{scoreA}</span>
         </div>
         <span className="font-display font-bold text-4xl text-muted">–</span>
         <div className="flex flex-col items-start">
-          <span className="font-display font-bold text-sm uppercase tracking-widest text-team-b">{teamBName}</span>
+          <span
+            className="font-display font-bold text-sm uppercase tracking-widest"
+            style={{ color: teamBColor }}
+          >
+            {teamBName}
+          </span>
           <span className="font-display font-bold text-[72px] leading-none text-score tabular-nums">{scoreB}</span>
         </div>
       </div>
