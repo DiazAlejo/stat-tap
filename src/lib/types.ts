@@ -29,6 +29,8 @@ export interface GameMeta {
   mode: StatMode
   status: GameStatus
   createdAt: number
+  teamAColor?: string
+  teamBColor?: string
 }
 
 export interface GameEvent {
