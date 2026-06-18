@@ -22,6 +22,7 @@ function formatDate(ts: number): string {
 export function GameCard({ game, onDelete, onRestoreGame }: GameCardProps) {
   const [copied, setCopied] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [deleteError, setDeleteError] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
@@ -29,6 +30,7 @@ export function GameCard({ game, onDelete, onRestoreGame }: GameCardProps) {
   function handleCopy(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+    // Share link always points to the public report page (never to /live)
     const url = `${window.location.origin}/game/${game.id}`
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true)
@@ -41,27 +43,36 @@ export function GameCard({ game, onDelete, onRestoreGame }: GameCardProps) {
     e.stopPropagation()
     if (!confirming) {
       setConfirming(true)
-      timerRef.current = setTimeout(() => setConfirming(false), 3000)
+      timerRef.current = setTimeout(() => setConfirming(false), 5000)
       return
     }
     if (timerRef.current) clearTimeout(timerRef.current)
     setConfirming(false)
-    onDelete(game.id) // optimistic remove
+    setDeleteError(false)
+    onDelete(game.id)
     try {
       const res = await fetch(`/api/game/${game.id}`, { method: 'DELETE' })
       if (!res.ok) {
-        onRestoreGame(game) // revert if server rejected it
+        onRestoreGame(game)
+        setDeleteError(true)
+        setTimeout(() => setDeleteError(false), 4000)
       }
     } catch {
-      onRestoreGame(game) // revert on network error
+      onRestoreGame(game)
+      setDeleteError(true)
+      setTimeout(() => setDeleteError(false), 4000)
     }
   }
 
+  // Live games resume live tracking; ended games open the stats report
+  const cardHref = game.status === 'live'
+    ? `/live/${game.id}`
+    : `/game/${game.id}?from=home`
+
   return (
     <div className="relative bg-surface border border-[var(--color-border)] rounded-xl hover:bg-surface-elevated transition-colors active:scale-[0.99] active:opacity-90">
-      {/* Clickable card body — Link is the reliable navigation primitive */}
       <Link
-        href={`/game/${game.id}?from=home`}
+        href={cardHref}
         className="flex flex-col gap-1 min-w-0 px-5 py-4 pr-28 block"
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -90,9 +101,11 @@ export function GameCard({ game, onDelete, onRestoreGame }: GameCardProps) {
           )}
           <span className="font-body text-sm text-muted">{formatDate(game.createdAt)}</span>
         </div>
+        {deleteError && (
+          <span className="font-body text-xs text-destructive">Delete failed — try again</span>
+        )}
       </Link>
 
-      {/* Action buttons — absolutely positioned so they don't intercept the Link */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
         <button
           onClick={handleDeleteClick}
