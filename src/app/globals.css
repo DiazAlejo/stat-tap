@@ -43,6 +43,11 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Eliminate iOS 300ms tap delay on all interactive elements */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.1ms !important;

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Barlow, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 
@@ -19,6 +19,12 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   title: 'StatTap',
   description: 'Real-time basketball pickup game stat tracker',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  // maximumScale intentionally omitted — disabling zoom is an accessibility violation
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
