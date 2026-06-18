@@ -12,9 +12,7 @@ export function PlayerGrid() {
   const playersB = meta.players.filter(p => p.team === 'B')
   const rowCount = Math.max(playersA.length, playersB.length, 1)
 
-  // Calculate tile height from viewport — leave space for score header (~100px) and action bar (~80px)
-  // We use CSS calc rather than JS to avoid reflows
-  // Each tile gets equal share of the remaining height
+  // Tile height fills remaining viewport after score header (~100px) and action bar (~80px)
   const tileHeight = Math.max(MIN_TILE_HEIGHT,
     typeof window !== 'undefined'
       ? Math.floor((window.innerHeight - 180) / rowCount)

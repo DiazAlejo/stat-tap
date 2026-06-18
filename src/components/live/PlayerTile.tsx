@@ -20,7 +20,6 @@ export function PlayerTile({ player, tileHeight }: PlayerTileProps) {
 
   return (
     <button
-      role="button"
       aria-pressed={isSelected}
       aria-label={`${player.displayLabel}, Team ${player.team}`}
       onClick={handleClick}
