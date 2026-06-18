@@ -5,6 +5,7 @@ import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import { FinalScoreHeader } from '@/components/report/FinalScoreHeader'
 import { BoxScoreTable } from '@/components/report/BoxScoreTable'
 import { LoggerActions } from '@/components/report/LoggerActions'
+import { HomeBackButton } from '@/components/report/HomeBackButton'
 import type { GameState } from '@/lib/types'
 
 export default async function GameReportPage({
@@ -17,6 +18,7 @@ export default async function GameReportPage({
   const { gameId } = await params
   const { from } = await searchParams
   const isLogger = from === 'logger'
+  const isFromHome = from === 'home'
 
   const meta = await getMeta(gameId)
   if (!meta) redirect('/')
@@ -47,6 +49,7 @@ export default async function GameReportPage({
   return (
     <main className="min-h-dvh bg-bg p-6 flex flex-col gap-8 max-w-3xl mx-auto">
       {isLogger && <LoggerActions gameId={gameId} />}
+      {isFromHome && <HomeBackButton />}
 
       {isLive && (
         <div className="bg-primary/10 border border-primary/30 rounded-xl px-4 py-3">
@@ -62,6 +65,7 @@ export default async function GameReportPage({
         isLive={isLive}
         teamAColor={teamAColor}
         teamBColor={teamBColor}
+        createdAt={meta.createdAt}
       />
 
       <div className="flex flex-col gap-6">

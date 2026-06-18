@@ -1,3 +1,11 @@
+function formatDate(ts: number): string {
+  return new Date(ts).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
 interface FinalScoreHeaderProps {
   teamAName: string
   teamBName: string
@@ -6,10 +14,11 @@ interface FinalScoreHeaderProps {
   isLive: boolean
   teamAColor: string
   teamBColor: string
+  createdAt: number
 }
 
 export function FinalScoreHeader({
-  teamAName, teamBName, scoreA, scoreB, isLive, teamAColor, teamBColor,
+  teamAName, teamBName, scoreA, scoreB, isLive, teamAColor, teamBColor, createdAt,
 }: FinalScoreHeaderProps) {
   return (
     <div className="flex flex-col items-center gap-2">
@@ -28,6 +37,7 @@ export function FinalScoreHeader({
           <span className={`font-display font-bold text-xs uppercase tracking-widest ${isLive ? 'text-primary' : 'text-muted'}`}>
             {isLive ? 'LIVE' : 'FINAL'}
           </span>
+          <span className="font-body text-xs text-muted">{formatDate(createdAt)}</span>
         </div>
         <div className="flex flex-col items-start gap-1">
           <span
