@@ -31,9 +31,9 @@ export function BoxScoreTable({ teamName, team, players, playerStats, mode }: Bo
           <tr className="border-b border-[var(--color-border)]">
             <th className="text-left px-4 py-2 font-body text-xs text-muted uppercase tracking-wide">Player</th>
             <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">PTS</th>
-            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">FG</th>
-            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">3P</th>
-            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">FT</th>
+            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? 'FGM' : 'FG'}</th>
+            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? '3PM' : '3P'}</th>
+            <th className="text-right px-3 py-2 font-body text-xs text-muted uppercase tracking-wide">{isPointsOnly ? 'FTM' : 'FT'}</th>
           </tr>
         </thead>
         <tbody>
