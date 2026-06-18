@@ -70,20 +70,36 @@ export function GameSetupForm({ onCancel }: GameSetupFormProps) {
     <div className="flex flex-col gap-6 p-6">
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-3">
+          <span
+            className="font-display font-bold text-xl"
+            style={{ color: teamAColor }}
+          >
+            {teamAName || 'Team A'}
+          </span>
           <TeamNameInput team="A" value={teamAName} onChange={setTeamAName} />
-          <TeamColorPicker team="A" value={teamAColor} onChange={setTeamAColor} />
+          <TeamColorPicker
+            team="A"
+            value={teamAColor}
+            onChange={setTeamAColor}
+            disabledColor={teamBColor}
+          />
         </div>
         <div className="flex flex-col gap-3">
+          <span
+            className="font-display font-bold text-xl"
+            style={{ color: teamBColor }}
+          >
+            {teamBName || 'Team B'}
+          </span>
           <TeamNameInput team="B" value={teamBName} onChange={setTeamBName} />
-          <TeamColorPicker team="B" value={teamBColor} onChange={setTeamBColor} />
+          <TeamColorPicker
+            team="B"
+            value={teamBColor}
+            onChange={setTeamBColor}
+            disabledColor={teamAColor}
+          />
         </div>
       </div>
-
-      {teamAColor === teamBColor && (
-        <p className="text-sm font-body text-muted bg-surface rounded-lg px-4 py-2 border border-[var(--color-border)]">
-          Both teams share the same color — the live scoreboard columns may be hard to tell apart.
-        </p>
-      )}
 
       <div className="grid grid-cols-2 gap-6">
         <PlayerEntryList team="A" entries={playersA} onChange={setPlayersA} />
