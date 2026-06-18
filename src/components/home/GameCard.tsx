@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Copy, Check, Zap, Trash2 } from 'lucide-react'
 import type { GameListItem } from '@/lib/types'
 
 interface GameCardProps {
   game: GameListItem
   onDelete: (id: string) => void
+  onRestoreGame: (game: GameListItem) => void
 }
 
 function formatDate(ts: number): string {
@@ -18,8 +19,7 @@ function formatDate(ts: number): string {
   })
 }
 
-export function GameCard({ game, onDelete }: GameCardProps) {
-  const router = useRouter()
+export function GameCard({ game, onDelete, onRestoreGame }: GameCardProps) {
   const [copied, setCopied] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -27,6 +27,7 @@ export function GameCard({ game, onDelete }: GameCardProps) {
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   function handleCopy(e: React.MouseEvent) {
+    e.preventDefault()
     e.stopPropagation()
     const url = `${window.location.origin}/game/${game.id}`
     navigator.clipboard.writeText(url).then(() => {
@@ -35,7 +36,8 @@ export function GameCard({ game, onDelete }: GameCardProps) {
     }).catch(() => {})
   }
 
-  function handleDeleteClick(e: React.MouseEvent) {
+  async function handleDeleteClick(e: React.MouseEvent) {
+    e.preventDefault()
     e.stopPropagation()
     if (!confirming) {
       setConfirming(true)
@@ -43,29 +45,25 @@ export function GameCard({ game, onDelete }: GameCardProps) {
       return
     }
     if (timerRef.current) clearTimeout(timerRef.current)
-    // Optimistic: remove from UI immediately, fire delete in background
-    onDelete(game.id)
-    fetch(`/api/game/${game.id}`, { method: 'DELETE' }).catch(() => {})
-  }
-
-  function handleCardClick() {
-    router.push(`/game/${game.id}?from=home`)
+    setConfirming(false)
+    onDelete(game.id) // optimistic remove
+    try {
+      const res = await fetch(`/api/game/${game.id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        onRestoreGame(game) // revert if server rejected it
+      }
+    } catch {
+      onRestoreGame(game) // revert on network error
+    }
   }
 
   return (
-    <div
-      onClick={handleCardClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          handleCardClick()
-        }
-      }}
-      className="bg-surface border border-[var(--color-border)] rounded-xl px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-elevated transition-colors active:scale-[0.99] active:opacity-90"
-    >
-      <div className="flex flex-col gap-1 min-w-0 flex-1">
+    <div className="relative bg-surface border border-[var(--color-border)] rounded-xl hover:bg-surface-elevated transition-colors active:scale-[0.99] active:opacity-90">
+      {/* Clickable card body — Link is the reliable navigation primitive */}
+      <Link
+        href={`/game/${game.id}?from=home`}
+        className="flex flex-col gap-1 min-w-0 px-5 py-4 pr-28 block"
+      >
         <div className="flex items-center gap-3 min-w-0">
           <span className="font-display font-bold text-lg truncate" style={{ color: game.teamAColor }}>
             {game.teamAName}
@@ -92,9 +90,10 @@ export function GameCard({ game, onDelete }: GameCardProps) {
           )}
           <span className="font-body text-sm text-muted">{formatDate(game.createdAt)}</span>
         </div>
-      </div>
+      </Link>
 
-      <div className="flex items-center gap-2 shrink-0">
+      {/* Action buttons — absolutely positioned so they don't intercept the Link */}
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
         <button
           onClick={handleDeleteClick}
           aria-label={confirming ? 'Confirm delete' : 'Delete game'}

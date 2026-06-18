@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Zap, Plus } from 'lucide-react'
 import { GameCard } from '@/components/home/GameCard'
-import { NewGameModal } from '@/components/home/NewGameModal'
 import type { GameListItem } from '@/lib/types'
 
 interface HomeClientProps {
@@ -11,11 +11,17 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ initialGames }: HomeClientProps) {
-  const [showModal, setShowModal] = useState(false)
+  const router = useRouter()
   const [games, setGames] = useState<GameListItem[]>(initialGames)
 
   function handleDelete(id: string) {
     setGames(prev => prev.filter(g => g.id !== id))
+  }
+
+  function handleRestoreGame(game: GameListItem) {
+    setGames(prev =>
+      [...prev, game].sort((a, b) => b.createdAt - a.createdAt)
+    )
   }
 
   return (
@@ -26,7 +32,7 @@ export function HomeClient({ initialGames }: HomeClientProps) {
           <h1 className="font-display font-bold text-3xl text-fg">StatTap</h1>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => router.push('/new')}
           className="flex items-center gap-2 px-5 py-3 bg-primary text-white font-display font-bold text-lg rounded-xl cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 min-h-[48px]"
         >
           <Plus size={20} />
@@ -43,12 +49,15 @@ export function HomeClient({ initialGames }: HomeClientProps) {
           </div>
         ) : (
           games.map(game => (
-            <GameCard key={game.id} game={game} onDelete={handleDelete} />
+            <GameCard
+              key={game.id}
+              game={game}
+              onDelete={handleDelete}
+              onRestoreGame={handleRestoreGame}
+            />
           ))
         )}
       </div>
-
-      {showModal && <NewGameModal onClose={() => setShowModal(false)} />}
     </main>
   )
 }
