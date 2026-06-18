@@ -25,9 +25,10 @@ export async function getMeta(gameId: string): Promise<GameMeta | null> {
 }
 
 export async function setMeta(gameId: string, meta: GameMeta): Promise<void> {
-  await getClient()
+  const { error } = await getClient()
     .from('games')
     .upsert({ id: gameId, meta: meta as unknown as Json, status: meta.status })
+  if (error) throw error
 }
 
 export async function getEvents(gameId: string): Promise<GameEvent[]> {
@@ -70,10 +71,11 @@ export async function getSnapshot(gameId: string): Promise<GameSnapshot | null> 
 }
 
 export async function setSnapshot(gameId: string, snapshot: GameSnapshot): Promise<void> {
-  await getClient()
+  const { error } = await getClient()
     .from('games')
     .update({ snapshot: snapshot as unknown as Json, status: 'ended' })
     .eq('id', gameId)
+  if (error) throw error
 }
 
 export async function listGames(): Promise<GameListItem[]> {
@@ -88,7 +90,8 @@ export async function listGames(): Promise<GameListItem[]> {
   for (const row of data ?? []) {
     try {
       const meta = row.meta as unknown as GameMeta
-      const status: GameStatus = row.status === 'ended' ? 'ended' : 'live'
+      const status: GameStatus =
+        (row.status === 'ended' || meta.status === 'ended') ? 'ended' : 'live'
       items.push({
         id: row.id,
         teamAName: meta.teamA.name,
