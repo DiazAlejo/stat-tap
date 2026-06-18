@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Copy, Check, Zap, Trash2 } from 'lucide-react'
 import type { GameListItem } from '@/lib/types'
@@ -22,6 +22,9 @@ export function GameCard({ game, onDelete }: GameCardProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   function handleCopy(e: React.MouseEvent) {
     e.stopPropagation()
@@ -36,9 +39,10 @@ export function GameCard({ game, onDelete }: GameCardProps) {
     e.stopPropagation()
     if (!confirming) {
       setConfirming(true)
-      setTimeout(() => setConfirming(false), 3000)
+      timerRef.current = setTimeout(() => setConfirming(false), 3000)
       return
     }
+    if (timerRef.current) clearTimeout(timerRef.current)
     // Optimistic: remove from UI immediately, fire delete in background
     onDelete(game.id)
     fetch(`/api/game/${game.id}`, { method: 'DELETE' }).catch(() => {})
@@ -53,7 +57,12 @@ export function GameCard({ game, onDelete }: GameCardProps) {
       onClick={handleCardClick}
       role="button"
       tabIndex={0}
-      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleCardClick()}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleCardClick()
+        }
+      }}
       className="bg-surface border border-[var(--color-border)] rounded-xl px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-elevated transition-colors active:scale-[0.99] active:opacity-90"
     >
       <div className="flex flex-col gap-1 min-w-0 flex-1">
@@ -73,7 +82,7 @@ export function GameCard({ game, onDelete }: GameCardProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
-          {game.status === 'ended' && game.scoreA !== undefined && (
+          {game.status === 'ended' && game.scoreA !== undefined && game.scoreB !== undefined && (
             <>
               <span className="font-display font-bold text-base text-fg tabular-nums">
                 {game.scoreA} – {game.scoreB}
@@ -91,7 +100,7 @@ export function GameCard({ game, onDelete }: GameCardProps) {
           aria-label={confirming ? 'Confirm delete' : 'Delete game'}
           className={`flex items-center justify-center rounded-lg transition-colors cursor-pointer min-h-[44px] min-w-[44px] ${
             confirming
-              ? 'bg-destructive/10 text-destructive px-2'
+              ? 'bg-destructive/10 text-destructive px-2 py-3'
               : 'p-2 bg-surface-elevated text-muted hover:text-destructive'
           }`}
         >
