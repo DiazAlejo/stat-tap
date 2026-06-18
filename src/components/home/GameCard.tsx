@@ -2,16 +2,26 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Copy, Check, Zap } from 'lucide-react'
+import { Copy, Check, Zap, Trash2 } from 'lucide-react'
 import type { GameListItem } from '@/lib/types'
 
 interface GameCardProps {
   game: GameListItem
+  onDelete: (id: string) => void
 }
 
-export function GameCard({ game }: GameCardProps) {
+function formatDate(ts: number): string {
+  return new Date(ts).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+export function GameCard({ game, onDelete }: GameCardProps) {
   const router = useRouter()
   const [copied, setCopied] = useState(false)
+  const [confirming, setConfirming] = useState(false)
 
   function handleCopy(e: React.MouseEvent) {
     e.stopPropagation()
@@ -22,8 +32,20 @@ export function GameCard({ game }: GameCardProps) {
     }).catch(() => {})
   }
 
+  function handleDeleteClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (!confirming) {
+      setConfirming(true)
+      setTimeout(() => setConfirming(false), 3000)
+      return
+    }
+    // Optimistic: remove from UI immediately, fire delete in background
+    onDelete(game.id)
+    fetch(`/api/game/${game.id}`, { method: 'DELETE' }).catch(() => {})
+  }
+
   function handleCardClick() {
-    router.push(`/game/${game.id}`)
+    router.push(`/game/${game.id}?from=home`)
   }
 
   return (
@@ -32,30 +54,61 @@ export function GameCard({ game }: GameCardProps) {
       role="button"
       tabIndex={0}
       onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleCardClick()}
-      className="bg-surface border border-[var(--color-border)] rounded-xl px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-elevated transition-colors min-h-[72px] active:scale-[0.99] active:opacity-90"
+      className="bg-surface border border-[var(--color-border)] rounded-xl px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-surface-elevated transition-colors active:scale-[0.99] active:opacity-90"
     >
-      <div className="flex items-center gap-3 min-w-0 flex-1">
-        <span className="font-display font-bold text-lg truncate" style={{ color: game.teamAColor }}>
-          {game.teamAName}
-        </span>
-        <span className="text-muted font-body text-base shrink-0">vs</span>
-        <span className="font-display font-bold text-lg truncate" style={{ color: game.teamBColor }}>
-          {game.teamBName}
-        </span>
-        {game.status === 'live' && (
-          <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/10 rounded-full shrink-0">
-            <Zap size={10} className="text-primary" fill="currentColor" />
-            <span className="text-primary font-display font-bold text-xs uppercase tracking-wide">Live</span>
+      <div className="flex flex-col gap-1 min-w-0 flex-1">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="font-display font-bold text-lg truncate" style={{ color: game.teamAColor }}>
+            {game.teamAName}
           </span>
-        )}
+          <span className="text-muted font-body text-base shrink-0">vs</span>
+          <span className="font-display font-bold text-lg truncate" style={{ color: game.teamBColor }}>
+            {game.teamBName}
+          </span>
+          {game.status === 'live' && (
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/10 rounded-full shrink-0">
+              <Zap size={10} className="text-primary" fill="currentColor" />
+              <span className="text-primary font-display font-bold text-xs uppercase tracking-wide">Live</span>
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {game.status === 'ended' && game.scoreA !== undefined && (
+            <>
+              <span className="font-display font-bold text-base text-fg tabular-nums">
+                {game.scoreA} – {game.scoreB}
+              </span>
+              <span className="text-muted font-body text-sm">·</span>
+            </>
+          )}
+          <span className="font-body text-sm text-muted">{formatDate(game.createdAt)}</span>
+        </div>
       </div>
-      <button
-        onClick={handleCopy}
-        aria-label={copied ? 'Link copied' : 'Copy share link'}
-        className="shrink-0 flex items-center justify-center p-2 rounded-lg bg-surface-elevated text-muted hover:text-fg transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
-      >
-        {copied ? <Check size={18} className="text-make" /> : <Copy size={18} />}
-      </button>
+
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={handleDeleteClick}
+          aria-label={confirming ? 'Confirm delete' : 'Delete game'}
+          className={`flex items-center justify-center rounded-lg transition-colors cursor-pointer min-h-[44px] min-w-[44px] ${
+            confirming
+              ? 'bg-destructive/10 text-destructive px-2'
+              : 'p-2 bg-surface-elevated text-muted hover:text-destructive'
+          }`}
+        >
+          {confirming ? (
+            <span className="font-display font-bold text-xs whitespace-nowrap">Delete?</span>
+          ) : (
+            <Trash2 size={18} />
+          )}
+        </button>
+        <button
+          onClick={handleCopy}
+          aria-label={copied ? 'Link copied' : 'Copy share link'}
+          className="flex items-center justify-center p-2 rounded-lg bg-surface-elevated text-muted hover:text-fg transition-colors cursor-pointer min-h-[44px] min-w-[44px]"
+        >
+          {copied ? <Check size={18} className="text-make" /> : <Copy size={18} />}
+        </button>
+      </div>
     </div>
   )
 }
