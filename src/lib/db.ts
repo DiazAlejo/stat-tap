@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database, Json } from './database.types'
 import type { GameMeta, GameEvent, GameSnapshot } from './types'
 
-let _client: ReturnType<typeof createClient> | null = null
+let _client: ReturnType<typeof createClient<Database>> | null = null
 
 function getClient() {
   if (!_client) {
-    _client = createClient(
+    _client = createClient<Database>(
       process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
@@ -19,13 +20,13 @@ export async function getMeta(gameId: string): Promise<GameMeta | null> {
     .select('meta')
     .eq('id', gameId)
     .single()
-  return data?.meta ?? null
+  return (data?.meta as unknown as GameMeta) ?? null
 }
 
 export async function setMeta(gameId: string, meta: GameMeta): Promise<void> {
   await getClient()
     .from('games')
-    .upsert({ id: gameId, meta, status: meta.status })
+    .upsert({ id: gameId, meta: meta as unknown as Json, status: meta.status })
 }
 
 export async function getEvents(gameId: string): Promise<GameEvent[]> {
@@ -34,13 +35,13 @@ export async function getEvents(gameId: string): Promise<GameEvent[]> {
     .select('payload')
     .eq('game_id', gameId)
     .order('created_at', { ascending: true })
-  return (data ?? []).map(row => row.payload as GameEvent)
+  return (data ?? []).map(row => row.payload as unknown as GameEvent)
 }
 
 export async function pushEvent(gameId: string, event: GameEvent): Promise<void> {
   await getClient()
     .from('events')
-    .insert({ id: event.id, game_id: gameId, payload: event })
+    .insert({ id: event.id, game_id: gameId, payload: event as unknown as Json })
 }
 
 export async function popEvent(gameId: string): Promise<GameEvent | null> {
@@ -55,7 +56,7 @@ export async function popEvent(gameId: string): Promise<GameEvent | null> {
   if (!last) return null
 
   await getClient().from('events').delete().eq('id', last.id)
-  return last.payload as GameEvent
+  return last.payload as unknown as GameEvent
 }
 
 export async function getSnapshot(gameId: string): Promise<GameSnapshot | null> {
@@ -64,12 +65,12 @@ export async function getSnapshot(gameId: string): Promise<GameSnapshot | null> 
     .select('snapshot')
     .eq('id', gameId)
     .single()
-  return data?.snapshot ?? null
+  return (data?.snapshot as unknown as GameSnapshot) ?? null
 }
 
 export async function setSnapshot(gameId: string, snapshot: GameSnapshot): Promise<void> {
   await getClient()
     .from('games')
-    .update({ snapshot, status: 'ended' })
+    .update({ snapshot: snapshot as unknown as Json, status: 'ended' })
     .eq('id', gameId)
 }
