@@ -24,6 +24,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const meta = await getMeta(id)
+  if (!meta) return NextResponse.json({ error: 'Game not found' }, { status: 404 })
   try {
     await deleteGame(id)
     return new NextResponse(null, { status: 204 })
