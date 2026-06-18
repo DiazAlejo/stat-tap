@@ -106,3 +106,9 @@ export async function listGames(): Promise<GameListItem[]> {
   }
   return items
 }
+
+export async function deleteGame(gameId: string): Promise<void> {
+  // Delete events first (foreign key: events.game_id → games.id)
+  await getClient().from('events').delete().eq('game_id', gameId)
+  await getClient().from('games').delete().eq('id', gameId)
+}
