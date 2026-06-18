@@ -7,9 +7,14 @@ import type { Player, PlayerStats } from '@/lib/types'
 
 function PointsOnlyRow({ player, stats }: { player: Player; stats: PlayerStats }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[var(--color-border)]">
-      <span className="font-display font-semibold text-base text-fg">{player.displayLabel}</span>
-      <span className="font-display font-bold text-lg text-fg tabular-nums">{stats.points} pts</span>
+    <div className="flex items-center justify-between py-2 border-b border-[var(--color-border)] gap-4">
+      <span className="font-display font-semibold text-sm text-fg shrink-0">{player.displayLabel}</span>
+      <div className="flex items-center gap-3 text-xs font-body tabular-nums">
+        <span className="text-fg font-bold">{stats.points}pts</span>
+        <span className="text-muted">FG {stats.fgMakes}</span>
+        <span className="text-muted">3PT {stats.threeMakes}</span>
+        <span className="text-muted">FT {stats.ftMakes}</span>
+      </div>
     </div>
   )
 }
