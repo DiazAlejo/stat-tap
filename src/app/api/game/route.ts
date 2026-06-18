@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { setMeta } from '@/lib/db'
-import { resolveDisplayLabel, DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
+import { resolveDisplayLabel, DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR, TEAM_COLORS } from '@/lib/game'
 import type { GameMeta, Player } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
     mode: mode ?? 'points-only',
     status: 'live',
     createdAt: Date.now(),
-    teamAColor: typeof teamAColor === 'string' ? teamAColor : DEFAULT_TEAM_A_COLOR,
-    teamBColor: typeof teamBColor === 'string' ? teamBColor : DEFAULT_TEAM_B_COLOR,
+    teamAColor: (TEAM_COLORS as readonly string[]).includes(teamAColor) ? teamAColor : DEFAULT_TEAM_A_COLOR,
+    teamBColor: (TEAM_COLORS as readonly string[]).includes(teamBColor) ? teamBColor : DEFAULT_TEAM_B_COLOR,
   }
 
   await setMeta(gameId, meta)

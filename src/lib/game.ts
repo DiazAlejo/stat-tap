@@ -54,4 +54,4 @@ export const TEAM_COLORS = [
   '#22C55E', // green
   '#EAB308', // yellow
   '#EF4444', // red
-]
+] as const
