@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Home, Copy, Check } from 'lucide-react'
 
 interface LoggerActionsProps {
@@ -9,7 +9,13 @@ interface LoggerActionsProps {
 }
 
 export function LoggerActions({ gameId }: LoggerActionsProps) {
+  const router = useRouter()
   const [copied, setCopied] = useState(false)
+
+  function handleHome() {
+    router.push('/')
+    router.refresh()
+  }
 
   function handleCopy() {
     const url = `${window.location.origin}/game/${gameId}`
@@ -21,13 +27,13 @@ export function LoggerActions({ gameId }: LoggerActionsProps) {
 
   return (
     <div className="flex items-center gap-3">
-      <Link
-        href="/"
+      <button
+        onClick={handleHome}
         className="flex items-center gap-2 px-4 py-3 bg-surface rounded-xl border border-[var(--color-border)] text-fg font-display font-semibold text-sm uppercase tracking-wide cursor-pointer hover:bg-surface-elevated transition-colors min-h-[48px]"
       >
         <Home size={16} />
         Home
-      </Link>
+      </button>
       <button
         onClick={handleCopy}
         aria-label={copied ? 'Link copied' : 'Copy share link'}

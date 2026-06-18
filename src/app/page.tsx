@@ -2,6 +2,8 @@ import { listGames } from '@/lib/db'
 import { HomeClient } from '@/components/home/HomeClient'
 import type { GameListItem } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   let games: GameListItem[] = []
   try {
