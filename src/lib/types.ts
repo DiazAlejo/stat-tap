@@ -64,3 +64,13 @@ export interface GameSnapshot {
   finalState: GameState
   endedAt: number
 }
+
+export interface GameListItem {
+  id: string
+  teamAName: string
+  teamBName: string
+  teamAColor: string
+  teamBColor: string
+  status: 'live' | 'ended'
+  createdAt: number
+}
