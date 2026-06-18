@@ -17,7 +17,7 @@ export function SyncIndicator() {
 
   if (syncStatus === 'syncing') {
     return (
-      <div className="flex items-center gap-1 text-muted" aria-label="Syncing">
+      <div className="flex items-center gap-1 text-muted" aria-label="Saving…">
         <Loader2 size={14} className="animate-spin" />
         <span className="font-body text-xs">Saving…</span>
       </div>
