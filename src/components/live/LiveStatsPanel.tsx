@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react'
 import { useGame } from '@/context/GameContext'
-import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR, emptyStats } from '@/lib/game'
 import type { Player, PlayerStats } from '@/lib/types'
 
 function PointsOnlyRow({ player, stats }: { player: Player; stats: PlayerStats }) {
@@ -54,8 +54,7 @@ export function LiveStatsPanel({ onClose }: LiveStatsPanelProps) {
           {teamLabel}
         </h3>
         {players.map(player => {
-          const stats = derived.playerStats[player.id]
-          if (!stats) return null
+          const stats = derived.playerStats[player.id] ?? emptyStats()
           return isMakeMiss
             ? <MakeMissRow key={player.id} player={player} stats={stats} />
             : <PointsOnlyRow key={player.id} player={player} stats={stats} />
