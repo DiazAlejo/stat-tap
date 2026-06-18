@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { setMeta } from '@/lib/kv'
+import { setMeta } from '@/lib/db'
 import { resolveDisplayLabel } from '@/lib/game'
 import type { GameMeta, Player } from '@/lib/types'
 

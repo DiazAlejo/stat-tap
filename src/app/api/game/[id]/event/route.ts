@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMeta, pushEvent } from '@/lib/kv'
+import { getMeta, pushEvent } from '@/lib/db'
 import type { GameEvent } from '@/lib/types'
 
 export async function POST(

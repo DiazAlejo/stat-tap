@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMeta, getEvents, getSnapshot } from '@/lib/kv'
+import { getMeta, getEvents, getSnapshot } from '@/lib/db'
 
 export async function GET(
   _req: NextRequest,

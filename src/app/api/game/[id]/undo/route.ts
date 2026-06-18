@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMeta, popEvent } from '@/lib/kv'
+import { getMeta, popEvent } from '@/lib/db'
 
 export async function POST(
   _req: NextRequest,

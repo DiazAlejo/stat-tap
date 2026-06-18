@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getMeta, getEvents, getSnapshot } from '@/lib/kv'
+import { getMeta, getEvents, getSnapshot } from '@/lib/db'
 import { gameReducer } from '@/lib/reducer'
 import { FinalScoreHeader } from '@/components/report/FinalScoreHeader'
 import { BoxScoreTable } from '@/components/report/BoxScoreTable'

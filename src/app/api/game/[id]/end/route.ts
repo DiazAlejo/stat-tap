@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getMeta, setMeta, getEvents, setSnapshot } from '@/lib/kv'
+import { getMeta, setMeta, getEvents, setSnapshot } from '@/lib/db'
 import { gameReducer } from '@/lib/reducer'
 import type { GameSnapshot } from '@/lib/types'
 

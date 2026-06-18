@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getMeta, getEvents } from '@/lib/kv'
+import { getMeta, getEvents } from '@/lib/db'
 import { LiveGameClient } from './LiveGameClient'
 
 export default async function LiveGamePage({ params }: { params: Promise<{ gameId: string }> }) {
