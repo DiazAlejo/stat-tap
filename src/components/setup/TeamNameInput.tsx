@@ -2,12 +2,10 @@ interface TeamNameInputProps {
   team: 'A' | 'B'
   value: string
   onChange: (val: string) => void
+  teamColor: string
 }
 
-export function TeamNameInput({ team, value, onChange }: TeamNameInputProps) {
-  const accentClass = team === 'A'
-    ? 'border-team-a focus:border-team-a focus:ring-team-a/20'
-    : 'border-team-b focus:border-team-b focus:ring-team-b/20'
+export function TeamNameInput({ team, value, onChange, teamColor }: TeamNameInputProps) {
   const label = team === 'A' ? 'Team A' : 'Team B'
   const placeholder = team === 'A' ? 'Team A' : 'Team B'
 
@@ -20,7 +18,8 @@ export function TeamNameInput({ team, value, onChange }: TeamNameInputProps) {
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={20}
-        className={`bg-surface border ${accentClass} rounded-lg px-4 py-3 text-fg font-display text-xl min-h-[44px] focus:outline-none focus:ring-2 transition-colors duration-200`}
+        style={{ color: teamColor }}
+        className="bg-surface border border-[var(--color-border)] rounded-lg px-4 py-3 font-display text-xl min-h-[44px] focus:outline-none focus:ring-2 focus:ring-offset-0 transition-colors duration-200"
       />
     </div>
   )

@@ -76,7 +76,7 @@ export function GameSetupForm({ onCancel }: GameSetupFormProps) {
           >
             {teamAName || 'Team A'}
           </span>
-          <TeamNameInput team="A" value={teamAName} onChange={setTeamAName} />
+          <TeamNameInput team="A" value={teamAName} onChange={setTeamAName} teamColor={teamAColor} />
           <TeamColorPicker
             team="A"
             value={teamAColor}
@@ -91,7 +91,7 @@ export function GameSetupForm({ onCancel }: GameSetupFormProps) {
           >
             {teamBName || 'Team B'}
           </span>
-          <TeamNameInput team="B" value={teamBName} onChange={setTeamBName} />
+          <TeamNameInput team="B" value={teamBName} onChange={setTeamBName} teamColor={teamBColor} />
           <TeamColorPicker
             team="B"
             value={teamBColor}

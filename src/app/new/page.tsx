@@ -15,9 +15,7 @@ export default function NewGamePage() {
         </Link>
         <h1 className="font-display font-bold text-2xl text-fg">New Game</h1>
       </header>
-      <div className="flex-1 overflow-y-auto">
-        <GameSetupForm />
-      </div>
+      <GameSetupForm />
     </main>
   )
 }
