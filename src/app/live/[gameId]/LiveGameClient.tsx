@@ -1,20 +1,43 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { BarChart2 } from 'lucide-react'
 import { GameProvider, useGame } from '@/context/GameContext'
 import { ScoreHeader } from '@/components/live/ScoreHeader'
 import { PlayerGrid } from '@/components/live/PlayerGrid'
 import { ActionBar } from '@/components/live/ActionBar'
 import { SyncIndicator } from '@/components/ui/SyncIndicator'
+import { EndGameModal } from '@/components/live/EndGameModal'
+import { LiveStatsPanel } from '@/components/live/LiveStatsPanel'
 import type { GameMeta, GameEvent } from '@/lib/types'
 
 function LiveGameInner() {
   const { meta, derived, dispatch } = useGame()
   const [showEndGameModal, setShowEndGameModal] = useState(false)
+  const [showStatsPanel, setShowStatsPanel] = useState(false)
+  const [endGameLoading, setEndGameLoading] = useState(false)
+  const router = useRouter()
 
   function handleUndo() {
     dispatch({ type: 'UNDO' })
     fetch(`/api/game/${meta.id}/undo`, { method: 'POST' }).catch(() => {})
+  }
+
+  async function handleEndGame() {
+    setEndGameLoading(true)
+    try {
+      const res = await fetch(`/api/game/${meta.id}/end`, { method: 'POST' })
+      if (res.ok) {
+        router.push(`/game/${meta.id}`)
+      } else {
+        setEndGameLoading(false)
+        setShowEndGameModal(false)
+      }
+    } catch {
+      setEndGameLoading(false)
+      setShowEndGameModal(false)
+    }
   }
 
   return (
@@ -32,33 +55,25 @@ function LiveGameInner() {
       </div>
       <PlayerGrid />
       <ActionBar />
+
+      {/* Stats toggle button */}
+      <button
+        onClick={() => setShowStatsPanel(true)}
+        aria-label="Open live stats"
+        className="fixed bottom-[80px] right-4 z-30 bg-surface-elevated border border-[var(--color-border)] rounded-full p-3 cursor-pointer text-muted hover:text-primary transition-colors"
+      >
+        <BarChart2 size={22} />
+      </button>
+
       {showEndGameModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-surface rounded-2xl p-8 max-w-sm w-full mx-4 flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <h2 className="font-display font-bold text-2xl text-fg">End this game?</h2>
-              <p className="font-body text-muted text-sm">This will lock the event log and generate the final report. This cannot be undone.</p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEndGameModal(false)}
-                className="flex-1 px-4 py-3 rounded-xl border border-[var(--color-border)] text-muted font-display font-semibold cursor-pointer hover:text-fg transition-colors active:opacity-85"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  setShowEndGameModal(false)
-                  const res = await fetch(`/api/game/${meta.id}/end`, { method: 'POST' })
-                  if (res.ok) window.location.href = `/game/${meta.id}`
-                }}
-                className="flex-1 px-4 py-3 rounded-xl bg-destructive text-white font-display font-bold cursor-pointer active:opacity-85 active:scale-[0.98] transition-all"
-              >
-                End Game &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
+        <EndGameModal
+          onClose={() => setShowEndGameModal(false)}
+          onConfirm={handleEndGame}
+          isLoading={endGameLoading}
+        />
+      )}
+      {showStatsPanel && (
+        <LiveStatsPanel onClose={() => setShowStatsPanel(false)} />
       )}
     </div>
   )
