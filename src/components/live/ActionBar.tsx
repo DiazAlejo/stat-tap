@@ -2,6 +2,7 @@
 
 import { Check, X } from 'lucide-react'
 import { useGame } from '@/context/GameContext'
+import { DEFAULT_TEAM_A_COLOR, DEFAULT_TEAM_B_COLOR } from '@/lib/game'
 import type { ActionType, GameEvent } from '@/lib/types'
 
 const POINTS_ONLY_ACTIONS: { label: string; actionType: ActionType; points: number }[] = [
@@ -24,6 +25,9 @@ export function ActionBar() {
 
   const hasPlayer = selectedPlayerId !== null
   const selectedPlayer = meta.players.find(p => p.id === selectedPlayerId)
+  const selectedTeamColor = selectedPlayer?.team === 'B'
+    ? (meta.teamBColor ?? DEFAULT_TEAM_B_COLOR)
+    : (meta.teamAColor ?? DEFAULT_TEAM_A_COLOR)
 
   function handleAction(actionType: ActionType, points: number) {
     if (!selectedPlayer) return
@@ -37,11 +41,9 @@ export function ActionBar() {
       timestamp: Date.now(),
     }
 
-    // Optimistic update
     dispatch({ type: 'ADD_EVENT', event })
     dispatch({ type: 'SET_SYNC', status: 'syncing' })
 
-    // Background sync
     fetch(`/api/game/${meta.id}/event`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,26 +63,34 @@ export function ActionBar() {
       })
   }
 
-  if (!hasPlayer) {
-    return (
-      <div className="shrink-0 bg-surface border-t border-[var(--color-border)] flex items-center justify-center min-h-[72px]">
-        <span className="font-display font-semibold text-sm text-muted uppercase tracking-wide">
-          Select a player
-        </span>
-      </div>
-    )
-  }
+  const isPointsOnly = meta.mode === 'points-only'
 
   return (
-    <div className="shrink-0 bg-surface border-t border-[var(--color-border)]">
-      <div className="flex gap-px">
-        {meta.mode === 'points-only'
+    <div className="shrink-0 bg-surface-elevated border-t-2 border-[var(--color-border)]">
+      <div className="px-4 py-1.5 text-center border-b border-[var(--color-border)]">
+        {selectedPlayer ? (
+          <span
+            className="font-display font-semibold text-xs uppercase tracking-wide"
+            style={{ color: selectedTeamColor }}
+          >
+            {selectedPlayer.displayLabel}
+          </span>
+        ) : (
+          <span className="font-display font-semibold text-xs text-muted uppercase tracking-wide">
+            Select a player
+          </span>
+        )}
+      </div>
+
+      <div className="flex gap-1 p-1">
+        {isPointsOnly
           ? POINTS_ONLY_ACTIONS.map(action => (
               <button
                 key={action.actionType}
+                disabled={!hasPlayer}
                 onClick={() => handleAction(action.actionType, action.points)}
                 aria-label={`${action.label} for ${selectedPlayer?.displayLabel ?? 'selected player'}`}
-                className="flex-1 min-h-[72px] bg-primary text-white font-display font-bold text-xl cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150"
+                className="flex-1 min-h-[96px] bg-primary text-white font-display font-bold text-2xl sm:text-3xl rounded-lg cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 disabled:opacity-35 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 {action.label}
               </button>
@@ -88,13 +98,14 @@ export function ActionBar() {
           : MAKE_MISS_ACTIONS.map(action => (
               <button
                 key={action.actionType}
+                disabled={!hasPlayer}
                 onClick={() => handleAction(action.actionType, action.points)}
                 aria-label={`${action.label} for ${selectedPlayer?.displayLabel ?? 'selected player'}`}
-                className={`flex-1 min-h-[72px] font-display font-bold text-lg text-white cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 flex flex-col items-center justify-center gap-1 ${
+                className={`flex-1 min-h-[88px] font-display font-bold text-base sm:text-lg text-white rounded-lg cursor-pointer active:opacity-85 active:scale-[0.98] transition-all duration-150 flex flex-col items-center justify-center gap-0.5 disabled:opacity-35 disabled:cursor-not-allowed disabled:active:scale-100 ${
                   action.isMake ? 'bg-make' : 'bg-miss'
                 }`}
               >
-                {action.isMake ? <Check size={16} /> : <X size={16} />}
+                {action.isMake ? <Check size={18} /> : <X size={18} />}
                 {action.label}
               </button>
             ))

@@ -36,7 +36,7 @@ export function PlayerEntryList({ team, entries, onChange }: PlayerEntryListProp
   }
 
   return (
-    <div className={`flex flex-col gap-2 border ${borderColor} rounded-xl p-4 bg-surface`}>
+    <div className={`flex flex-col gap-2 border ${borderColor} rounded-xl p-4 bg-surface min-w-0`}>
       <h3 className={`font-display font-bold text-lg uppercase tracking-wide ${accentColor}`}>
         Team {team}
       </h3>

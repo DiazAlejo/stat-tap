@@ -101,7 +101,7 @@ export function GameSetupForm({ onCancel }: GameSetupFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 [&>*]:min-w-0">
         <PlayerEntryList team="A" entries={playersA} onChange={setPlayersA} />
         <PlayerEntryList team="B" entries={playersB} onChange={setPlayersB} />
       </div>

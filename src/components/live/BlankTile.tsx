@@ -1,13 +1,18 @@
 interface BlankTileProps {
   tileHeight: number
+  teamColor: string
 }
 
-export function BlankTile({ tileHeight }: BlankTileProps) {
+export function BlankTile({ tileHeight, teamColor }: BlankTileProps) {
   return (
     <div
       aria-hidden="true"
-      style={{ height: `${tileHeight}px` }}
-      className="w-full bg-surface opacity-30 border border-[var(--color-border)] cursor-default pointer-events-none"
+      style={{
+        height: `${tileHeight}px`,
+        backgroundColor: `color-mix(in srgb, ${teamColor} 4%, var(--color-surface))`,
+        borderColor: `color-mix(in srgb, ${teamColor} 15%, transparent)`,
+      }}
+      className="w-full rounded-md border border-dashed opacity-40 cursor-default pointer-events-none"
     />
   )
 }

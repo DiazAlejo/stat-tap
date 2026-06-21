@@ -21,7 +21,7 @@ export function PlayerEntryRow({ entry, onChange, onRemove }: PlayerEntryRowProp
   )
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 min-w-0">
       <input
         type="text"
         value={entry.jersey}
@@ -29,7 +29,7 @@ export function PlayerEntryRow({ entry, onChange, onRemove }: PlayerEntryRowProp
         placeholder="#"
         maxLength={3}
         inputMode="numeric"
-        className="w-14 bg-surface border border-[var(--color-border)] rounded-lg px-3 py-2 text-fg font-display text-lg text-center min-h-[44px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+        className="w-14 shrink-0 bg-surface border border-[var(--color-border)] rounded-lg px-3 py-2 text-fg font-display text-lg text-center min-h-[44px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
       />
       <input
         type="text"
@@ -37,13 +37,12 @@ export function PlayerEntryRow({ entry, onChange, onRemove }: PlayerEntryRowProp
         onChange={e => onChange({ ...entry, name: e.target.value })}
         placeholder="Name"
         maxLength={30}
-        className="flex-1 bg-surface border border-[var(--color-border)] rounded-lg px-3 py-2 text-fg font-body text-base min-h-[44px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
+        className="flex-1 min-w-0 bg-surface border border-[var(--color-border)] rounded-lg px-3 py-2 text-fg font-body text-base min-h-[44px] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors"
       />
-      <span className="text-muted text-sm font-body min-w-[80px] truncate">{preview}</span>
       <button
         onClick={onRemove}
         aria-label={`Remove ${preview}`}
-        className="p-2 text-muted hover:text-destructive transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+        className="shrink-0 p-2 text-muted hover:text-destructive transition-colors cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
       >
         <X size={18} />
       </button>

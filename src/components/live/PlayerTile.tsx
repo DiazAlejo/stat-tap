@@ -1,21 +1,26 @@
 'use client'
 
 import { useGame } from '@/context/GameContext'
-import type { Player } from '@/lib/types'
+import type { Player, Team } from '@/lib/types'
 
 interface PlayerTileProps {
   player: Player
+  team: Team
   tileHeight: number
   teamColor: string
 }
 
-export function PlayerTile({ player, tileHeight, teamColor }: PlayerTileProps) {
+export function PlayerTile({ player, team, tileHeight, teamColor }: PlayerTileProps) {
   const { selectedPlayerId, dispatch } = useGame()
   const isSelected = selectedPlayerId === player.id
 
   function handleClick() {
     dispatch({ type: 'SET_SELECTED', playerId: player.id })
   }
+
+  const accentBorder = team === 'A'
+    ? { borderLeftWidth: isSelected ? 4 : 3, borderLeftColor: teamColor }
+    : { borderRightWidth: isSelected ? 4 : 3, borderRightColor: teamColor }
 
   return (
     <button
@@ -24,21 +29,23 @@ export function PlayerTile({ player, tileHeight, teamColor }: PlayerTileProps) {
       onClick={handleClick}
       style={{
         height: `${tileHeight}px`,
-        ...(isSelected ? { borderLeftColor: teamColor } : {}),
+        backgroundColor: isSelected
+          ? `color-mix(in srgb, ${teamColor} 28%, var(--color-surface-elevated))`
+          : `color-mix(in srgb, ${teamColor} 12%, var(--color-surface))`,
+        borderColor: `color-mix(in srgb, ${teamColor} 40%, var(--color-border))`,
+        boxShadow: isSelected ? `0 0 0 2px color-mix(in srgb, ${teamColor} 70%, transparent)` : undefined,
+        ...accentBorder,
       }}
-      className={`
-        w-full flex items-center justify-center px-4
-        font-display font-semibold text-lg text-fg
-        border border-[var(--color-border)]
+      className="
+        w-full flex items-center justify-center px-2
+        font-display font-semibold text-sm sm:text-base text-fg
+        border rounded-md
         cursor-pointer select-none
         transition-all duration-[120ms] ease-out
-        ${isSelected
-          ? 'bg-surface-elevated border-l-4'
-          : 'bg-surface hover:bg-surface-elevated/50'
-        }
-      `}
+        hover:brightness-110
+      "
     >
-      {player.displayLabel}
+      <span className="truncate">{player.displayLabel}</span>
     </button>
   )
 }

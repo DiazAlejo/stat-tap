@@ -53,7 +53,7 @@ function LiveGameInner() {
         onUndo={handleUndo}
         onEndGameClick={() => setShowEndGameModal(true)}
       />
-      <div className="absolute top-3 right-[180px] z-10">
+      <div className="absolute top-2 right-4 z-10">
         <SyncIndicator />
       </div>
       <PlayerGrid />
@@ -63,7 +63,7 @@ function LiveGameInner() {
       <button
         onClick={() => setShowStatsPanel(true)}
         aria-label="Open live stats"
-        className="fixed bottom-[80px] right-4 z-30 bg-surface-elevated border border-[var(--color-border)] rounded-full p-3 cursor-pointer text-muted hover:text-primary transition-colors"
+        className="fixed bottom-[108px] right-4 z-30 bg-surface-elevated border border-[var(--color-border)] rounded-full p-3 cursor-pointer text-muted hover:text-primary transition-colors shadow-lg"
       >
         <BarChart2 size={22} />
       </button>
