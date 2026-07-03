@@ -8,12 +8,14 @@
 
 ## 1. Tech Stack
 
+**Updated 2026-07-01** — the original v1.0 plan below specified Vercel KV; the project migrated to Supabase on 2026-06-18 (see `docs/superpowers/plans/2026-06-18-supabase-migration.md`). Table reflects the actual current stack (verified against `package.json`).
+
 | Layer | Technology | Reason |
 |---|---|---|
-| Framework | Next.js 14 (App Router) | Frontend + API routes in one project |
+| Framework | Next.js 16 (App Router) | Frontend + API routes in one project |
 | Language | TypeScript | Type safety across client and server |
-| Storage | Vercel KV (Redis) | Zero-config key-value store, fast reads, ideal for event logs |
-| Deployment | Vercel | Native Next.js + KV integration |
+| Storage | Supabase (Postgres) | `games` + `events` tables, JSONB payloads — see `database_schema.md` |
+| Deployment | Vercel | Native Next.js integration |
 | Styling | Tailwind CSS | Utility-first, rapid iPad-first layout |
 | Icons | Lucide React | Consistent SVG icon set |
 | State | React Context + useReducer | Simple, no external dependency needed |
@@ -36,10 +38,9 @@ Browser (Next.js Client)
 Next.js API Routes (app/api/)
 │
 ▼
-Vercel KV (Redis)
-├── game:{id}:meta      → GameMeta (JSON)
-├── game:{id}:events    → Redis LIST (RPUSH / RPOP)
-└── game:{id}:snapshot  → GameSnapshot (JSON, set once on End Game)
+Supabase (Postgres) — src/lib/db.ts
+├── games table   → id, meta (jsonb), snapshot (jsonb, set once on End Game), status
+└── events table  → id, game_id (FK), payload (jsonb), created_at (insert / delete for undo)
 ```
 
 ### 2.2 Optimistic Update Contract
@@ -306,12 +307,13 @@ lib/
 
 ---
 
-## 10. Vercel KV Key Schema
+## 10. Supabase Table Schema
 
 ```
-game:{uuid}:meta        STRING  GameMeta JSON
-game:{uuid}:events      LIST    GameEvent JSON items (RPUSH / RPOP)
-game:{uuid}:snapshot    STRING  GameSnapshot JSON (written once)
+games   TABLE  id (PK), meta (jsonb), snapshot (jsonb, written once), status, created_at
+events  TABLE  id (PK), game_id (FK -> games.id), payload (jsonb), created_at
 ```
 
-TTL: No TTL set for MVP. Games persist indefinitely in KV.
+Full column reference and JSONB shapes: `database_schema.md`.
+
+TTL: No TTL/expiry set for MVP. Games persist indefinitely in Supabase.

@@ -1,133 +1,103 @@
 # Database Schema — StatTap MVP
 
-**Version:** 1.0  
-**Date:** 2026-06-18  
-**Storage:** Vercel KV (Redis)
+**Version:** 2.0
+**Date:** 2026-07-01 (updated — migrated off the original v1.0 Vercel KV design on 2026-06-18, same day it was written)
+**Storage:** Supabase (Postgres)
 
 ---
 
 ## Overview
 
-StatTap uses Vercel KV (Redis) as its only data store. There is no relational database. All data is stored as JSON strings or Redis lists, keyed by game ID.
+StatTap uses Supabase Postgres as its only data store, accessed via `@supabase/supabase-js` in `src/lib/db.ts`. There are two tables: `games` and `events`. Game and player data is stored as JSONB rather than fully normalized — the relational structure exists only for the `events.game_id` foreign key.
 
 ---
 
-## Key Naming Convention
+## Table: `games`
 
+**Written:** Once at game creation (`POST /api/game`)
+**Updated:** `meta`/`status` on each event-driven change; `snapshot`/`status` once at End Game
+**Read:** On every `GET /api/game/:id` and by `listGames()` for the game list
+
+```sql
+create table games (
+  id         text primary key,
+  meta       jsonb not null,
+  snapshot   jsonb,
+  status     text not null default 'live',
+  created_at timestamptz not null default now()
+);
 ```
-game:{uuid}:meta        → Game metadata (JSON string)
-game:{uuid}:events      → Ordered event log (Redis LIST)
-game:{uuid}:snapshot    → Final game snapshot (JSON string, set once)
-```
 
-All `{uuid}` values are generated via `crypto.randomUUID()` at game creation.
+### Column Reference
 
----
+| Column | Type | Notes |
+|---|---|---|
+| `id` | text | Primary key, `crypto.randomUUID()` generated at game creation |
+| `meta` | jsonb | Full `GameMeta` object (see below) |
+| `snapshot` | jsonb, nullable | Full `GameSnapshot`, set once on End Game, never updated after |
+| `status` | text | `'live'` \| `'ended'` |
+| `created_at` | timestamptz | Set at row creation |
 
-## Key 1: `game:{id}:meta`
+### `meta` (GameMeta) shape
 
-**Type:** Redis STRING (JSON)  
-**Written:** Once at game creation (`POST /api/game`)  
-**Updated:** Once at End Game (status field: `live` → `ended`)  
-**Read:** On every `GET /api/game/:id`
-
-### Schema
-
-```json
+```ts
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "teamA": { "name": "Lakers" },
-  "teamB": { "name": "Celtics" },
-  "players": [
-    {
-      "id": "a1b2c3d4-...",
-      "team": "A",
-      "jersey": "23",
-      "name": "Jordan",
-      "displayLabel": "23 · Jordan",
-      "slot": 1
-    },
-    {
-      "id": "e5f6g7h8-...",
-      "team": "A",
-      "jersey": "14",
-      "name": null,
-      "displayLabel": "14",
-      "slot": 2
-    },
-    {
-      "id": "i9j0k1l2-...",
-      "team": "B",
-      "jersey": null,
-      "name": "Marcus",
-      "displayLabel": "Marcus",
-      "slot": 1
-    },
-    {
-      "id": "m3n4o5p6-...",
-      "team": "B",
-      "jersey": null,
-      "name": null,
-      "displayLabel": "Player 2",
-      "slot": 2
-    }
-  ],
-  "mode": "make-miss",
-  "status": "live",
-  "createdAt": 1750281600000
+  id: string
+  teamA: { name: string }
+  teamB: { name: string }
+  players: Player[]
+  mode: 'points-only' | 'make-miss'
+  status: 'live' | 'ended'
+  createdAt: number
+  teamAColor?: string
+  teamBColor?: string
+  scoreA?: number
+  scoreB?: number
 }
 ```
 
-### Field Reference
+### `Player` shape (embedded in `meta.players`)
 
-| Field | Type | Required | Notes |
-|---|---|---|---|
-| `id` | string (UUID) | Yes | Primary key, game identifier |
-| `teamA.name` | string | Yes | Default: "Team A" |
-| `teamB.name` | string | Yes | Default: "Team B" |
-| `players` | Player[] | Yes | Min 1 total; max 12 per team |
-| `players[].id` | string (UUID) | Yes | Player identifier, never changes |
-| `players[].team` | "A" \| "B" | Yes | Team assignment |
-| `players[].jersey` | string \| null | No | Optional, max 3 chars |
-| `players[].name` | string \| null | No | Optional, max 30 chars |
-| `players[].displayLabel` | string | Yes | Resolved at setup, immutable |
-| `players[].slot` | number (1–12) | Yes | Grid position within team column |
-| `mode` | "points-only" \| "make-miss" | Yes | Fixed for game duration |
-| `status` | "live" \| "ended" | Yes | Changed once on End Game |
-| `createdAt` | number (Unix ms) | Yes | Set at creation |
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string (UUID) | Player identifier, never changes |
+| `team` | `'A' \| 'B'` | Team assignment |
+| `jersey` | string \| null | Optional |
+| `name` | string \| null | Optional |
+| `displayLabel` | string | Resolved at setup, immutable — see resolution rules in `technical_requirements_document.md` |
+| `slot` | number (1–12) | Grid position within team column |
 
 ---
 
-## Key 2: `game:{id}:events`
+## Table: `events`
 
-**Type:** Redis LIST  
-**Append:** `RPUSH game:{id}:events <json>` on each stat event  
-**Undo:** `RPOP game:{id}:events` to remove last event  
-**Read:** `LRANGE game:{id}:events 0 -1` to get full event log  
+**Insert:** `insert into events` on each stat event
+**Undo:** Fetch the most recent row by `game_id` + `created_at desc`, then `delete` it
+**Read:** `select * from events where game_id = :id order by created_at asc`
 
-### Individual Event Schema
+```sql
+create table events (
+  id         text primary key,
+  game_id    text not null references games(id),
+  payload    jsonb not null,
+  created_at timestamptz not null default now()
+);
 
-```json
-{
-  "id": "q7r8s9t0-e29b-41d4-a716-446655440001",
-  "playerId": "a1b2c3d4-...",
-  "team": "A",
-  "actionType": "FG_MAKE",
-  "points": 2,
-  "timestamp": 1750281720000
-}
+create index events_game_id_created_at on events(game_id, created_at);
 ```
 
-### Field Reference
+### `payload` (GameEvent) shape
 
-| Field | Type | Required | Notes |
-|---|---|---|---|
-| `id` | string (UUID) | Yes | Event identifier |
-| `playerId` | string (UUID) | Yes | References `players[].id` in meta |
-| `team` | "A" \| "B" | Yes | Redundant (derivable from playerId) but stored for fast reads |
-| `actionType` | enum | Yes | See Action Types below |
-| `points` | number | Yes | Pre-computed at event creation |
-| `timestamp` | number (Unix ms) | Yes | Client-generated at tap time |
+```ts
+{
+  id: string
+  playerId: string
+  team: 'A' | 'B'
+  actionType: 'FG_MAKE' | 'FG_MISS' | '3PT_MAKE' | '3PT_MISS' | 'FT_MAKE' | 'FT_MISS'
+  points: number
+  timestamp: number
+}
+```
 
 ### Action Types
 
@@ -140,98 +110,51 @@ All `{uuid}` values are generated via `crypto.randomUUID()` at game creation.
 | `FT_MAKE` | 1 | Free throw made |
 | `FT_MISS` | 0 | Free throw missed |
 
-### Redis Operations
-
-| Operation | Command | When |
-|---|---|---|
-| Add event | `RPUSH game:{id}:events {json}` | `POST /api/game/:id/event` |
-| Undo last event | `RPOP game:{id}:events` | `POST /api/game/:id/undo` |
-| Read all events | `LRANGE game:{id}:events 0 -1` | `GET /api/game/:id` |
-| Count events | `LLEN game:{id}:events` | Diagnostic only |
-
 ---
 
-## Key 3: `game:{id}:snapshot`
+## `snapshot` (GameSnapshot) shape
 
-**Type:** Redis STRING (JSON)  
-**Written:** Once on End Game (`POST /api/game/:id/end`)  
-**Never updated** after being set  
-**Read:** By `/game/{id}` report page  
+Written once on End Game, never updated:
 
-### Schema
-
-```json
+```ts
 {
-  "meta": { ... },
-  "events": [ ... ],
-  "finalState": {
-    "scoreA": 48,
-    "scoreB": 41,
-    "playerStats": {
-      "a1b2c3d4-...": {
-        "points": 18,
-        "fgMakes": 5,
-        "fgAttempts": 9,
-        "threeMakes": 1,
-        "threeAttempts": 2,
-        "ftMakes": 5,
-        "ftAttempts": 6
-      }
-    }
-  },
-  "endedAt": 1750284000000
+  meta: GameMeta
+  events: GameEvent[]
+  finalState: {
+    scoreA: number
+    scoreB: number
+    playerStats: Record<string, {
+      points: number
+      fgMakes: number
+      fgAttempts: number
+      threeMakes: number
+      threeAttempts: number
+      ftMakes: number
+      ftAttempts: number
+    }>
+  }
+  endedAt: number
 }
 ```
 
-### Field Reference
+---
 
-| Field | Type | Notes |
-|---|---|---|
-| `meta` | GameMeta | Full copy of `game:{id}:meta` at time of End Game |
-| `events` | GameEvent[] | Full copy of event list at time of End Game |
-| `finalState` | GameState | Computed by running reducer over all events |
-| `finalState.scoreA` | number | Total points scored by Team A |
-| `finalState.scoreB` | number | Total points scored by Team B |
-| `finalState.playerStats` | Record<playerId, PlayerStats> | Per-player computed stats |
-| `finalState.playerStats[id].points` | number | Total points |
-| `finalState.playerStats[id].fgMakes` | number | Field goals made |
-| `finalState.playerStats[id].fgAttempts` | number | Field goals attempted |
-| `finalState.playerStats[id].threeMakes` | number | Three-pointers made |
-| `finalState.playerStats[id].threeAttempts` | number | Three-pointers attempted |
-| `finalState.playerStats[id].ftMakes` | number | Free throws made |
-| `finalState.playerStats[id].ftAttempts` | number | Free throws attempted |
-| `endedAt` | number (Unix ms) | Timestamp of End Game trigger |
+## Deleting a Game
+
+`deleteGame()` in `src/lib/db.ts` deletes `events` rows for the game first (FK constraint), then the `games` row. Throws if the `games` delete affects zero rows (RLS may be blocking it).
 
 ---
 
-## Data Size Estimates
+## No Additional Relational Schema
 
-| Key | Estimated Size | Notes |
-|---|---|---|
-| `game:{id}:meta` | ~2–4 KB | Scales with player count |
-| `game:{id}:events` (per item) | ~200–300 bytes | Each event JSON |
-| `game:{id}:events` (full list, 200 events) | ~50–60 KB | Typical full game |
-| `game:{id}:snapshot` | ~55–65 KB | Meta + events + finalState |
-
-Vercel KV free tier: 256 MB storage. StatTap games are negligibly small.
-
----
-
-## TTL Policy
-
-MVP: **No TTL set.** Games persist indefinitely in Vercel KV.
-
-Future consideration: Set TTL of 30 days on `game:{id}:meta` and `game:{id}:events` after End Game.
-
----
-
-## No Relational Schema
-
-StatTap explicitly has no:
+StatTap still has no:
 - User table
-- Team table (teams are embedded in game meta)
-- Player table (players are embedded in game meta)
+- Separate `teams`/`players` tables (embedded in `games.meta` as JSONB)
 - Season or league table
-- Cross-game relations of any kind
+- Cross-game relations beyond `events.game_id → games.id`
 
-Every game is a fully self-contained document.
+---
+
+## Source of Truth
+
+This doc is generated from the actual implementation in `src/lib/db.ts` and `src/lib/database.types.ts` (Supabase-generated types) as of 2026-07-01. If those files change, update this doc to match — don't let it drift again the way the original Vercel KV version did.

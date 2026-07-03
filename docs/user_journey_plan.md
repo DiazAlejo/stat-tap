@@ -74,7 +74,7 @@ StatTap has three distinct user roles with different journeys through the app:
 2. Taps Undo button (always visible in header)
 3. Last event removed from local state instantly
 4. Score/stats recomputed
-5. Background: server pops last event from KV list
+5. Background: server deletes the last event row from Supabase
 ```
 
 **Checking stats mid-game:**
