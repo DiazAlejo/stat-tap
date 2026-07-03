@@ -6,7 +6,7 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({ from: mockFrom })),
 }))
 
-const { getMeta, getEvents, pushEvent, popEvent, getSnapshot } = await import('@/lib/db')
+const { getMeta, getEvents, popEvent, getSnapshot } = await import('@/lib/db')
 
 describe('db helpers', () => {
   beforeEach(() => {

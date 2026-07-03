@@ -38,6 +38,8 @@ export function ActionBar() {
       team: selectedPlayer.team,
       actionType,
       points,
+      // handleAction only runs from onClick, never during render — false positive.
+      // eslint-disable-next-line react-hooks/purity
       timestamp: Date.now(),
     }
 

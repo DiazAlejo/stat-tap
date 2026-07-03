@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { gameReducer } from '@/lib/reducer'
-import { emptyStats, initialGameState } from '@/lib/game'
 import type { GameEvent } from '@/lib/types'
 
 const makeEvent = (overrides: Partial<GameEvent>): GameEvent => ({
