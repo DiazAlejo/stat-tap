@@ -1,6 +1,19 @@
+---
+date: 2026-06-30
+type: next-actions
+project: stat-tap
+impact: 4
+urgency: 4
+strategic: 5
+tags:
+  - project/stat-tap
+---
+
 # StatTap — Next Actions
 
-Last updated: 2026-06-30
+Last updated: 2026-06-30. History: [[projects/stat-tap/build-log|build-log]] · scope: [[projects/stat-tap/mvp|mvp]] · origin: [[projects/stat-tap/idea|idea]]
+
+Docs: [[projects/stat-tap/docs/prd|PRD]] · [[projects/stat-tap/docs/database_schema|database schema]] · [[projects/stat-tap/docs/implementation_plan|implementation plan]] · [[projects/stat-tap/docs/technical_requirements_document|tech requirements]] · [[projects/stat-tap/docs/ui_ux_brief|UI/UX brief]] · [[projects/stat-tap/docs/user_journey_plan|user journey]] · [[projects/stat-tap/design-system/stattap/MASTER|design system]] · [[projects/stat-tap/README|README]]
 
 ---
 
