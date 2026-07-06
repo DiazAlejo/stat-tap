@@ -1,3 +1,5 @@
+@/Users/alejo/Documents/internal_operating_system/.claude/PROJECT_BOOTSTRAP.md
+
 # CLAUDE.md — StatTap MVP
 
 This file defines how Claude Code should work inside the StatTap project.
