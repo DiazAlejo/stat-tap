@@ -50,7 +50,20 @@ Docs: [[projects/stat-tap/docs/prd|PRD]] · [[projects/stat-tap/docs/database_sc
 
 ## GitHub Backlog
 
-_No open GitHub issues._
+- [ ] #1: Implement the live game screen UI — core screen (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/1
+- [ ] #2: Implement undo button (pop last event from event stack) (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/2
+- [ ] #3: Create game report route /game/[id] — public read-only box score (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/3
+- [ ] #4: Test the shareable link on a real iPhone (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/4
+- [ ] #5: Run all tests and verify they pass (GameContext, db, game, reducer) (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/5
+- [ ] #6: Supabase RLS: game report publicly readable, writeable only during active session (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/6
+- [ ] #7: Mobile layout testing on iPhone (secondary priority after iPad) (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/7
+- [ ] #8: Performance: verify stat entry feels instant (<50ms perceived latency) (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/8
+- [ ] #9: Add player count validation (max 12 per team enforced in UI) (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/9
+- [ ] #10: Complete live game screen on iPad simulator — all players visible, 2-tap flow (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/10
+- [ ] #11: Implement end game flow: confirmation → freeze → compute stats → generate game ID (labels: enhancement) — gh:https://github.com/DiazAlejo/stat-tap/issues/11
+- [ ] #12: Stat tracking mode lock — verify UX for mid-game mode changes (labels: question) — gh:https://github.com/DiazAlejo/stat-tap/issues/12
+- [ ] #13: Auto-save vs. manual save — decide per-event vs. game-end persistence (labels: question) — gh:https://github.com/DiazAlejo/stat-tap/issues/13
+- [ ] #14: Deployment URL — decide domain/subdomain for live Vercel deployment (labels: question) — gh:https://github.com/DiazAlejo/stat-tap/issues/14
 
 ---
 

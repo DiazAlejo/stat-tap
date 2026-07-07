@@ -1,3 +1,11 @@
+---
+date: 2026-07-03
+type: idea
+project: stat-tap
+tags:
+  - project/stat-tap
+---
+
 # StatTap — Idea
 
 ## The Problem

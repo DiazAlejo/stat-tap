@@ -1,3 +1,11 @@
+---
+date: 2026-07-03
+type: mvp
+project: stat-tap
+tags:
+  - project/stat-tap
+---
+
 # StatTap — MVP Scope
 
 ## Core Loop
