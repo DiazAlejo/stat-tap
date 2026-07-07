@@ -48,6 +48,12 @@ Docs: [[projects/stat-tap/docs/prd|PRD]] · [[projects/stat-tap/docs/database_sc
 
 ---
 
+## GitHub Backlog
+
+_No open GitHub issues._
+
+---
+
 ## Backlog
 
 - [ ] Run all tests and verify they pass (GameContext, db, game, reducer)
